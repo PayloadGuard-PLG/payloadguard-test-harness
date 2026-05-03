@@ -2,8 +2,8 @@
 
 Reference implementation for validating CI/CD consequence analysis tools under adversarial conditions.
 
-**Repository:** `darkvader-plg/payloadguard-test-harness`  
-**Analyser:** `darkvader-plg/payload-consequence-analyser`
+**Repository:** `payloadguard-plg/payloadguard-test-harness`  
+**Analyser:** `payloadguard-plg/payload-consequence-analyser`
 
 ---
 

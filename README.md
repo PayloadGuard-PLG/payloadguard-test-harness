@@ -1,6 +1,6 @@
 # PayloadGuard Test Harness
 
-A controlled test repository for validating and adversarially testing [PayloadGuard](https://github.com/DarkVader-PLG/payload-consequence-analyser).
+A controlled test repository for validating and adversarially testing [PayloadGuard](https://github.com/PayloadGuard-PLG/payload-consequence-analyser).
 
 ## Purpose
 

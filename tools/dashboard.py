@@ -342,7 +342,7 @@ def update_summary(_):
     total, passed, runs, last_ts, last_run_id = load_summary()
     rate = f"{passed/total*100:.0f}%" if total else "—"
     gh_url = (
-        f"https://github.com/DarkVader-PLG/payloadguard-test-harness/actions/runs/{last_run_id}"
+        f"https://github.com/PayloadGuard-PLG/payloadguard-test-harness/actions/runs/{last_run_id}"
         if last_run_id else None
     )
     last_card = dbc.Card(
