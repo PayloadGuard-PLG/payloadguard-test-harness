@@ -22,7 +22,7 @@ from pathlib import Path
 
 import requests
 
-OWNER = "darkvader-plg"
+OWNER = "payloadguard-plg"
 REPO = "payloadguard-test-harness"
 TOOLS_DIR = Path(__file__).parent
 TEST_CASES_FILE = TOOLS_DIR / "test_cases.json"

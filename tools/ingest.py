@@ -19,7 +19,7 @@ from pathlib import Path
 
 import requests
 
-OWNER = "darkvader-plg"
+OWNER = "payloadguard-plg"
 REPO = "payloadguard-test-harness"
 WORKFLOW_FILE = "payloadguard.yml"
 ARTIFACT_NAME = "payloadguard-results"
