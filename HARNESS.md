@@ -27,29 +27,33 @@ The suite covers five scenario families:
 
 ## Test Case Matrix
 
-| ID | Branch | Category | Expected | Description |
-|---|---|---|---|---|
-| T01 | safe/small-additive | safe | SAFE | Add health_check() — zero-noise baseline |
-| T02 | safe/docs-only | safe | SAFE | README additions only |
-| T12 | safe/large-rename | safe | SAFE | Three class renames — L4 false positive check |
-| T03 | destructive/mass-deletion | destructive | DESTRUCTIVE | Delete auth.py + database.py |
-| T04 | destructive/april-2026-replica | destructive | DESTRUCTIVE | April 2026 incident replica |
-| T05 | boundary/structural-threshold | boundary | DESTRUCTIVE | 4 methods removed from auth.py (~23.5% ratio) |
-| T09 | semantic/no-description | semantic | DESTRUCTIVE | No PR description, database.py deleted |
-| T10 | semantic/honest-critical | semantic | DESTRUCTIVE | Honest BREAKING CHANGE description, auth deleted |
-| T11 | multilang/structural-js-ts-go | multilang | DESTRUCTIVE | Structural deletions across JS, TS, Go |
-| A01 | adversarial/keyword-evasion | adversarial | DESTRUCTIVE | Deceptive description, no benign trigger words |
-| A02 | adversarial/rename-smuggling | adversarial | DESTRUCTIVE | auth.py renamed to identity.py, contents gutted |
-| A03 | adversarial/slow-deletion | adversarial | DESTRUCTIVE | 1 function removed from each of 5 files |
-| A04 | adversarial/addition-camouflage | adversarial | DESTRUCTIVE | 300-line api.js addition + auth.py deleted |
-| A05 | adversarial/nested-gutting | adversarial | DESTRUCTIVE | Auth class shell preserved, all methods deleted |
-| A06 | adversarial/threshold-gaming | adversarial | DESTRUCTIVE | Every metric tuned just below threshold (known miss) |
-| A07 | adversarial/new-file-replacement | adversarial | DESTRUCTIVE | auth.py deleted, auth_v2.py stub added |
-| A09 | adversarial/config-only-deletion | adversarial | DESTRUCTIVE | settings.yml + requirements.txt deleted |
-| A10 | adversarial/unicode-payload | adversarial | SAFE | Hostile Unicode in comments, +4/-1 — robustness test |
-| T23 | workflow-security/dependency-lock-tampering | workflow-security | DESTRUCTIVE | **Pending GitHub 2026 API** |
-| T24 | workflow-security/policy-bypass | workflow-security | DESTRUCTIVE | **Pending GitHub 2026 API** |
-| T25 | workflow-security/secret-exfiltration | workflow-security | DESTRUCTIVE | **Pending GitHub 2026 API** |
+The `temporal_group` column indicates how each case is treated by the regression runner:
+- **stable** — strict pass/fail, always compared against `expected_verdict`
+- **aging** — observational only; verdict will drift as branches age (see [Temporal Groups](#temporal-groups))
+
+| ID | Branch | Category | Group | Expected | Description |
+|---|---|---|---|---|---|
+| T01 | safe/small-additive | safe | aging | SAFE | Add health_check() — zero-noise baseline |
+| T02 | safe/docs-only | safe | aging | SAFE | README additions only |
+| T12 | safe/large-rename | safe | aging | SAFE | Three class renames — L4 false positive check |
+| T03 | destructive/mass-deletion | destructive | stable | DESTRUCTIVE | Delete auth.py + database.py |
+| T04 | destructive/april-2026-replica | destructive | stable | DESTRUCTIVE | April 2026 incident replica |
+| T05 | boundary/structural-threshold | boundary | stable | DESTRUCTIVE | 4 methods removed from auth.py (~23.5% ratio) |
+| T09 | semantic/no-description | semantic | stable | DESTRUCTIVE | No PR description, database.py deleted |
+| T10 | semantic/honest-critical | semantic | stable | DESTRUCTIVE | Honest BREAKING CHANGE description, auth deleted |
+| T11 | multilang/structural-js-ts-go | multilang | stable | DESTRUCTIVE | Structural deletions across JS, TS, Go |
+| A01 | adversarial/keyword-evasion | adversarial | stable | DESTRUCTIVE | Deceptive description, no benign trigger words |
+| A02 | adversarial/rename-smuggling | adversarial | stable | DESTRUCTIVE | auth.py renamed to identity.py, contents gutted |
+| A03 | adversarial/slow-deletion | adversarial | stable | DESTRUCTIVE | 1 function removed from each of 5 files |
+| A04 | adversarial/addition-camouflage | adversarial | stable | DESTRUCTIVE | 300-line api.js addition + auth.py deleted |
+| A05 | adversarial/nested-gutting | adversarial | stable | DESTRUCTIVE | Auth class shell preserved, all methods deleted |
+| A06 | adversarial/threshold-gaming | adversarial | stable | DESTRUCTIVE | Every metric tuned just below threshold (known miss) |
+| A07 | adversarial/new-file-replacement | adversarial | stable | DESTRUCTIVE | auth.py deleted, auth_v2.py stub added |
+| A09 | adversarial/config-only-deletion | adversarial | stable | DESTRUCTIVE | settings.yml + requirements.txt deleted |
+| A10 | adversarial/unicode-payload | adversarial | aging | SAFE | Hostile Unicode in comments, +4/-1 — robustness test |
+| T23 | workflow-security/dependency-lock-tampering | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
+| T24 | workflow-security/policy-bypass | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
+| T25 | workflow-security/secret-exfiltration | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
 
 ---
 
@@ -65,8 +69,14 @@ export GITHUB_TOKEN=ghp_...   # needs: repo, pull_requests, actions:read
 ### Full cycle
 
 ```bash
-# Reopen all PRs → wait for scans → close → ingest → display pass rate
+# Standard regression — 16 stable cases, strict pass/fail
 python tools/run_regression.py --token "$GITHUB_TOKEN" --ingest
+
+# Observe temporal drift — 4 aging cases, no pass/fail
+python tools/run_regression.py --token "$GITHUB_TOKEN" --mode temporal
+
+# Full audit — all active cases (stable=strict, aging=observational)
+python tools/run_regression.py --token "$GITHUB_TOKEN" --mode full --ingest
 
 # Ingest only (if scans already ran)
 python tools/ingest.py --token "$GITHUB_TOKEN"
@@ -81,13 +91,15 @@ python tools/dashboard.py
 ```
 run_regression.py
   --token TOKEN       GitHub token (or set GITHUB_TOKEN env var)
+  --mode MODE         stable (default) | temporal | full
   --ingest            Chain to ingest.py after all scans complete
   --dry-run           Print what would be reopened without acting
+  --timeout N         Seconds to wait for scans (default: 300)
 
 ingest.py
   --token TOKEN       GitHub token
   --db PATH           SQLite path (default: tools/db/results.db)
-  --limit N           Max runs to pull (default: 50)
+  --since YYYY-MM-DD  Only ingest runs on or after this date
 
 dashboard.py
   --db PATH           SQLite path (default: tools/db/results.db)
@@ -169,6 +181,23 @@ expected_verdicts (
 
 5. Run `python tools/ingest.py` to seed `expected_verdicts` with the new entry.
 6. Run a full regression to confirm the new case passes.
+
+---
+
+## Temporal Groups
+
+PayloadGuard's branch age scoring adds +1 to the verdict score after 90 days, +2 after 180, +3 after 365. For DESTRUCTIVE-expected cases this is harmless — the verdict doesn't change. For SAFE-expected cases the verdict can drift to REVIEW (and eventually CAUTION) as branches age, even though the diff itself is unchanged.
+
+The harness handles this with two groups:
+
+| Group | Cases | Behaviour |
+|---|---|---|
+| **stable** | All DESTRUCTIVE-expected cases | Strict pass/fail — regression fails if verdict is wrong |
+| **aging** | T01, T02, T12, A10 (SAFE-expected) | Observational — verdicts recorded but not checked against expected |
+
+**Why keep the aging cases at all?** They are a longitudinal dataset. Running `--mode temporal` every few weeks lets you watch exactly when and how the branch age signal fires, which is useful for tuning the `branch_age_days` thresholds in `payloadguard.yml`. The drift progression SAFE → REVIEW → CAUTION is the tool working correctly — not a bug.
+
+**When aging cases need refreshing:** If T01/T02/T12/A10 reach CAUTION (score 3–4) and you want to reset the clock, create fresh branches off current main, open new PRs, and update `test_cases.json` with the new branch names. The old branches can be archived (left closed) for historical reference.
 
 ---
 

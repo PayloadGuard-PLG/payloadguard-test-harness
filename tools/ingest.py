@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS scan_runs (
     branch                  TEXT    NOT NULL,
     test_case_id            TEXT,
     category                TEXT,
+    temporal_group          TEXT,
     run_at                  TEXT    NOT NULL,
     ingested_at             TEXT    DEFAULT CURRENT_TIMESTAMP,
 
@@ -139,6 +140,7 @@ CREATE TABLE IF NOT EXISTS structural_flags (
 CREATE TABLE IF NOT EXISTS expected_verdicts (
     test_case_id        TEXT PRIMARY KEY,
     category            TEXT,
+    temporal_group      TEXT,
     expected_verdict    TEXT,
     expected_exit_code  INTEGER,
     description         TEXT
@@ -163,10 +165,10 @@ def seed_expected_verdicts(conn, test_cases):
     for branch, tc in test_cases.items():
         conn.execute(
             """INSERT OR REPLACE INTO expected_verdicts
-               (test_case_id, category, expected_verdict, expected_exit_code, description)
-               VALUES (?, ?, ?, ?, ?)""",
-            (tc["id"], tc["category"], tc["expected_verdict"],
-             tc["expected_exit_code"], tc["description"]),
+               (test_case_id, category, temporal_group, expected_verdict, expected_exit_code, description)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (tc["id"], tc["category"], tc.get("temporal_group", "stable"),
+             tc["expected_verdict"], tc["expected_exit_code"], tc["description"]),
         )
     conn.commit()
 
@@ -192,7 +194,7 @@ def insert_run(conn, run, report, test_cases):
 
     cur = conn.execute(
         """INSERT OR IGNORE INTO scan_runs (
-               workflow_run_id, pr_number, branch, test_case_id, category, run_at,
+               workflow_run_id, pr_number, branch, test_case_id, category, temporal_group, run_at,
                verdict_status, verdict_severity, verdict_score, exit_code,
                files_added, files_deleted, files_modified,
                lines_added, lines_deleted, deletion_ratio_pct,
@@ -200,10 +202,10 @@ def insert_run(conn, run, report, test_cases):
                branch_age_days, temporal_status, temporal_score,
                semantic_status, semantic_is_deceptive, semantic_keyword,
                raw_json
-           ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+           ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
             str(run["id"]), pr_number, branch,
-            tc.get("id"), tc.get("category"), run["created_at"],
+            tc.get("id"), tc.get("category"), tc.get("temporal_group", "stable"), run["created_at"],
             verdict.get("status"), verdict.get("severity"),
             verdict.get("severity_score"), exit_code,
             files.get("added"), files.get("deleted"), files.get("modified"),

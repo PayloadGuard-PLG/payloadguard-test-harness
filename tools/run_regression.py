@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
 """
-Trigger a full PayloadGuard regression cycle:
-  1. Reopen all test PRs  → scans fire automatically
+Trigger a PayloadGuard regression cycle:
+  1. Reopen test PRs  → scans fire automatically
   2. Wait for all scans to complete (polls check runs)
   3. Close all PRs again
   4. Optionally run ingest to hydrate SQLite
 
+Modes
+-----
+  stable   (default) — runs the 16 stable test cases with strict pass/fail
+  temporal           — runs only the 4 aging cases as observation (no pass/fail)
+  full               — runs all active cases; stable=strict, aging=observational
+
 Usage:
     export GITHUB_TOKEN=ghp_...
     python tools/run_regression.py
-    python tools/run_regression.py --ingest          # also run ingest after closing
-    python tools/run_regression.py --timeout 600     # wait up to 10 minutes
+    python tools/run_regression.py --mode temporal
+    python tools/run_regression.py --mode full --ingest
+    python tools/run_regression.py --timeout 600
 """
 import argparse
 import json
@@ -98,7 +105,7 @@ def get_check_runs(token, sha):
 def wait_for_scans(token, pr_sha_map, timeout, reopen_time):
     """
     Poll until every PR in pr_sha_map has a completed PayloadGuard check run
-    whose started_at is after reopen_time.  Returns dict of pr_number → verdict.
+    whose started_at is after reopen_time.  Returns dict of pr_number → conclusion.
     """
     deadline = time.time() + timeout
     pending = dict(pr_sha_map)   # pr_number → head_sha
@@ -142,11 +149,66 @@ def wait_for_scans(token, pr_sha_map, timeout, reopen_time):
     return results
 
 
+# ── Pass/fail evaluation ──────────────────────────────────────────────────────
+
+def _conclusion_matches(conclusion, expected_exit_code):
+    """True if the GitHub check conclusion matches the expected exit code."""
+    if expected_exit_code == 2:
+        return conclusion == "failure"
+    return conclusion == "success"
+
+
+def evaluate_results(scan_results, pr_branch_map, test_cases, mode):
+    """
+    Print a per-PR verdict summary and return (passed, failed, observed) counts.
+
+    stable  cases: strict pass/fail against expected_exit_code
+    aging   cases: observational — printed but not counted in pass/fail
+    """
+    passed = failed = observed = 0
+
+    print(f"\n{'─'*60}")
+    print(f"{'ID':<6} {'Branch':<40} {'Result':<10} {'Status'}")
+    print(f"{'─'*60}")
+
+    for pr_num, conclusion in sorted(scan_results.items(), key=lambda x: x[0]):
+        branch = pr_branch_map.get(pr_num, "unknown")
+        tc = test_cases.get(branch, {})
+        tc_id = tc.get("id", "?")
+        group = tc.get("temporal_group", "stable")
+        expected_exit = tc.get("expected_exit_code", 0)
+        expected_verdict = tc.get("expected_verdict", "?")
+
+        result_label = "DESTRUCTIVE" if conclusion == "failure" else "SAFE/OK"
+
+        if group == "aging":
+            status = f"[OBSERVING]  expected={expected_verdict}, age is accumulating"
+            observed += 1
+        elif _conclusion_matches(conclusion, expected_exit):
+            status = "PASS"
+            passed += 1
+        else:
+            expected_label = "DESTRUCTIVE" if expected_exit == 2 else "SAFE/OK"
+            status = f"FAIL  expected={expected_label}, got={result_label}"
+            failed += 1
+
+        print(f"{tc_id:<6} {branch:<40} {result_label:<10} {status}")
+
+    return passed, failed, observed
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run a full PayloadGuard regression cycle"
+        description="Run a PayloadGuard regression cycle",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Modes:
+  stable   (default) — 16 stable cases, strict pass/fail
+  temporal           — 4 aging cases, observational only (no pass/fail)
+  full               — all active cases; stable=strict, aging=observational
+        """,
     )
     parser.add_argument("--token", default=os.environ.get("GITHUB_TOKEN"))
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT,
@@ -155,25 +217,53 @@ def main():
                         help="Run ingest.py after closing PRs")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print what would happen without touching GitHub")
+    parser.add_argument(
+        "--mode", choices=["stable", "temporal", "full"], default="stable",
+        help="stable=strict regression (default), temporal=aging observation, full=both",
+    )
     args = parser.parse_args()
 
     if not args.token:
         print("Error: set GITHUB_TOKEN or pass --token", file=sys.stderr)
         sys.exit(1)
 
-    known_branches = set(json.loads(TEST_CASES_FILE.read_text()).keys())
-    print(f"Known test branches: {len(known_branches)}")
+    test_cases = json.loads(TEST_CASES_FILE.read_text())
+
+    # Filter branches by mode and skip pending cases
+    if args.mode == "stable":
+        active_branches = {
+            b for b, tc in test_cases.items()
+            if tc.get("temporal_group", "stable") == "stable"
+            and tc.get("status") != "pending-2026-api"
+        }
+    elif args.mode == "temporal":
+        active_branches = {
+            b for b, tc in test_cases.items()
+            if tc.get("temporal_group") == "aging"
+        }
+    else:  # full
+        active_branches = {
+            b for b, tc in test_cases.items()
+            if tc.get("status") != "pending-2026-api"
+        }
+
+    print(f"Mode: {args.mode} — {len(active_branches)} branch(es) in scope")
 
     # ── 1. Find closed test PRs ───────────────────────────────────────────────
     print("Fetching closed test PRs ...")
-    prs = list_closed_test_prs(args.token, known_branches)
+    prs = list_closed_test_prs(args.token, active_branches)
     if not prs:
         print("No closed test PRs found. Nothing to do.")
         sys.exit(0)
 
     print(f"Found {len(prs)} closed PR(s):")
+    pr_branch_map = {}
     for pr in sorted(prs, key=lambda p: p["number"]):
-        print(f"  #{pr['number']:3d}  {pr['head']['ref']}")
+        branch = pr["head"]["ref"]
+        tc = test_cases.get(branch, {})
+        group_tag = f"[{tc.get('temporal_group', 'stable')}]"
+        print(f"  #{pr['number']:3d}  {branch}  {group_tag}")
+        pr_branch_map[pr["number"]] = branch
 
     if args.dry_run:
         print("\n--dry-run: stopping here.")
@@ -212,16 +302,23 @@ def main():
         except Exception as e:
             print(f"  #{pr_num} FAILED to close: {e}")
 
-    # ── 5. Summary ────────────────────────────────────────────────────────────
-    print(f"\n{'─'*50}")
-    print(f"Regression complete — {len(scan_results)}/{len(pr_sha_map)} scans finished")
-    successes = sum(1 for v in scan_results.values() if v == "success")
-    failures  = sum(1 for v in scan_results.values() if v == "failure")
-    print(f"  success (SAFE)       : {successes}")
-    print(f"  failure (DESTRUCTIVE): {failures}")
+    # ── 5. Evaluate and summarise ─────────────────────────────────────────────
+    passed, failed, observed = evaluate_results(
+        scan_results, pr_branch_map, test_cases, args.mode
+    )
+
     missed = len(pr_sha_map) - len(scan_results)
+
+    print(f"\n{'─'*60}")
+    print(f"Regression complete ({args.mode} mode) — "
+          f"{len(scan_results)}/{len(pr_sha_map)} scans finished")
+    if args.mode != "temporal":
+        print(f"  PASS     : {passed}")
+        print(f"  FAIL     : {failed}")
+    if observed:
+        print(f"  OBSERVING: {observed}  (aging cases — no pass/fail)")
     if missed:
-        print(f"  timed out            : {missed}")
+        print(f"  timed out: {missed}")
 
     # ── 6. Optional ingest ───────────────────────────────────────────────────
     if args.ingest:
@@ -234,6 +331,9 @@ def main():
         if result.returncode != 0:
             print("ingest.py exited with errors")
             sys.exit(result.returncode)
+
+    if args.mode != "temporal" and failed:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

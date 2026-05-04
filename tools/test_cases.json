@@ -2,6 +2,7 @@
   "safe/small-additive": {
     "id": "T01",
     "category": "safe",
+    "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
     "description": "Add health_check() method — zero-noise baseline. Any non-SAFE result is a bug."
@@ -9,6 +10,7 @@
   "safe/docs-only": {
     "id": "T02",
     "category": "safe",
+    "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
     "description": "README additions only, no code touched — confirms non-code changes don't false-positive."
@@ -16,6 +18,7 @@
   "safe/large-rename": {
     "id": "T12",
     "category": "safe",
+    "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
     "description": "Three class renames in auth.py — rename gap detector. False positive = L4 rename blind spot."
@@ -23,6 +26,7 @@
   "destructive/mass-deletion": {
     "id": "T03",
     "category": "destructive",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Delete auth.py and database.py — canonical destructive payload."
@@ -30,6 +34,7 @@
   "destructive/april-2026-replica": {
     "id": "T04",
     "category": "destructive",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Replica of April 2026 incident: benign commit message, catastrophic diff."
@@ -37,6 +42,7 @@
   "boundary/structural-threshold": {
     "id": "T05",
     "category": "boundary",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "4 methods removed from auth.py (~23.5% structural deletion, just above 20% threshold)."
@@ -44,6 +50,7 @@
   "semantic/no-description": {
     "id": "T09",
     "category": "semantic",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "No PR description — L5b returns UNVERIFIED but diff deletes database.py (DESTRUCTIVE)."
@@ -51,6 +58,7 @@
   "semantic/honest-critical": {
     "id": "T10",
     "category": "semantic",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Honest BREAKING CHANGE description of auth removal — L5b TRANSPARENT, overall DESTRUCTIVE."
@@ -58,6 +66,7 @@
   "multilang/structural-js-ts-go": {
     "id": "T11",
     "category": "multilang",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Structural deletions across JS, TS, and Go — parser stress test."
@@ -65,6 +74,7 @@
   "adversarial/keyword-evasion": {
     "id": "A01",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Deceptive description without benign trigger words — tests non-keyword evasion."
@@ -72,6 +82,7 @@
   "adversarial/rename-smuggling": {
     "id": "A02",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "auth.py renamed to identity.py with contents gutted — tests renamed-file blind spot."
@@ -79,6 +90,7 @@
   "adversarial/slow-deletion": {
     "id": "A03",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "1 function removed from each of 5 files — distributed deletion evasion."
@@ -86,6 +98,7 @@
   "adversarial/addition-camouflage": {
     "id": "A04",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Large api.js addition + auth.py deletion — addition camouflage pattern."
@@ -93,6 +106,7 @@
   "adversarial/nested-gutting": {
     "id": "A05",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "class Auth shell preserved, all methods deleted — tests L4 method tracking."
@@ -100,6 +114,7 @@
   "adversarial/threshold-gaming": {
     "id": "A06",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Every metric tuned just below threshold — tests compound scoring defense."
@@ -107,6 +122,7 @@
   "adversarial/new-file-replacement": {
     "id": "A07",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Delete auth.py, add auth_v2.py stub — delete+add replacement pattern."
@@ -114,6 +130,7 @@
   "adversarial/config-only-deletion": {
     "id": "A09",
     "category": "adversarial",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "description": "Config-only deletion (settings.yml, requirements.txt) — pure L2 signal test."
@@ -121,6 +138,7 @@
   "adversarial/unicode-payload": {
     "id": "A10",
     "category": "adversarial",
+    "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
     "description": "Hostile Unicode encoding in comments, minimal +4/-1 change — robustness/no-crash test."
@@ -128,6 +146,7 @@
   "workflow-security/dependency-lock-tampering": {
     "id": "T23",
     "category": "workflow-security",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "status": "pending-2026-api",
@@ -136,6 +155,7 @@
   "workflow-security/policy-bypass": {
     "id": "T24",
     "category": "workflow-security",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "status": "pending-2026-api",
@@ -144,6 +164,7 @@
   "workflow-security/secret-exfiltration": {
     "id": "T25",
     "category": "workflow-security",
+    "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "status": "pending-2026-api",
