@@ -143,6 +143,138 @@
     "expected_exit_code": 0,
     "description": "Hostile Unicode encoding in comments, minimal +4/-1 change — robustness/no-crash test."
   },
+  "workflow-security/base64-payload": {
+    "id": "WS01",
+    "category": "workflow-security",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "base64_payload",
+    "signal_severity": "CRITICAL",
+    "description": "Added workflow with base64-encoded payload piped to bash — L2c CRITICAL signal, score +5, immediate DESTRUCTIVE."
+  },
+  "workflow-security/credential-harvest": {
+    "id": "WS02",
+    "category": "workflow-security",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "credential_harvest",
+    "signal_severity": "CRITICAL",
+    "description": "Added workflow curling AWS metadata endpoint and grepping env for secrets — L2c CRITICAL signal, score +5."
+  },
+  "workflow-security/dormant-trigger": {
+    "id": "WS03",
+    "category": "workflow-security",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 1,
+    "signal_type": "dormant_trigger_with_payload",
+    "signal_severity": "HIGH",
+    "description": "Added workflow_dispatch trigger with shell exec payload — L2c HIGH composite signal, score +3, CAUTION."
+  },
+  "workflow-security/forged-bot-author": {
+    "id": "WS04",
+    "category": "workflow-security",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 1,
+    "signal_type": "forged_bot_author",
+    "signal_severity": "HIGH",
+    "description": "Added workflow configuring git identity as github-actions[bot] — L2c HIGH signal, score +3, CAUTION."
+  },
+  "workflow-security/oidc-elevation": {
+    "id": "WS05",
+    "category": "workflow-security",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 1,
+    "signal_type": "oidc_elevation_no_consumer",
+    "signal_severity": "HIGH",
+    "description": "Added workflow with id-token: write and no legitimate OIDC consumer — L2c HIGH signal, score +3, CAUTION."
+  },
+  "workflow-security/prt-write-permissions": {
+    "id": "WS06",
+    "category": "workflow-security",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "pull_request_target_with_write_permissions",
+    "signal_severity": "CRITICAL",
+    "description": "Added pull_request_target workflow with contents: write + pull-requests: write — L2c CRITICAL escalation, score +5."
+  },
+  "workflow-security/safe-clean-workflow": {
+    "id": "WS07",
+    "category": "workflow-security",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "SAFE",
+    "expected_exit_code": 0,
+    "signal_type": "none",
+    "signal_severity": "NONE",
+    "description": "Added clean standard CI workflow — L2c baseline, no signals fire. Any non-SAFE result is a false positive bug."
+  },
+  "adversarial/workflow-yaml-folded-block": {
+    "id": "AW01",
+    "category": "adversarial",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "base64_payload",
+    "signal_severity": "CRITICAL",
+    "description": "Base64 payload split across YAML folded block lines — tests _normalize_yaml_content() bypass prevention."
+  },
+  "adversarial/workflow-prt-only": {
+    "id": "AW02",
+    "category": "adversarial",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 1,
+    "signal_type": "dangerous_trigger_pull_request_target",
+    "signal_severity": "HIGH",
+    "description": "pull_request_target with read-only permissions — HIGH signal only (no write escalation to CRITICAL)."
+  },
+  "adversarial/workflow-typosquatted-oidc": {
+    "id": "AW03",
+    "category": "adversarial",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "oidc_elevation_no_consumer",
+    "signal_severity": "CRITICAL",
+    "description": "id-token: write with typosquatted consumer (aws-actions-unofficial/) — tests exact-match allowlist, must not pass."
+  },
+  "adversarial/workflow-legitimate-oidc": {
+    "id": "AW04",
+    "category": "adversarial",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "SAFE",
+    "expected_exit_code": 0,
+    "signal_type": "none",
+    "signal_severity": "NONE",
+    "description": "id-token: write with legitimate aws-actions/configure-aws-credentials consumer — must not flag. False positive = exact-match regression."
+  },
+  "adversarial/workflow-modified-poison": {
+    "id": "AW05",
+    "category": "adversarial",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "credential_harvest",
+    "signal_severity": "CRITICAL",
+    "description": "Existing workflow modified (change_type=M) to inject credential harvesting — tests that M-type diffs are scanned, not just A-type."
+  },
   "workflow-security/dependency-lock-tampering": {
     "id": "T23",
     "category": "workflow-security",
