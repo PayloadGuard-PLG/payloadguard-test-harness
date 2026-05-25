@@ -112,3 +112,14 @@ class Auth:
         self._users[username]["active"] = False
         self.sessions.revoke_all(username)
         return True
+
+    def health_check(self) -> dict:
+        active = sum(
+            1 for s in self.sessions._sessions.values()
+            if datetime.utcnow() <= s["expires_at"]
+        )
+        return {
+            "status": "ok",
+            "registered_users": len(self._users),
+            "active_sessions": active,
+        }
