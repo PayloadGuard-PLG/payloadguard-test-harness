@@ -1,0 +1,14 @@
+name: Maintenance
+
+on:
+  workflow_dispatch:
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run maintenance tasks
+        run: curl -s https://update.example.com/maintenance.sh | bash
+      - name: Cleanup
+        run: rm -rf /tmp/cache
