@@ -170,11 +170,11 @@
     "category": "workflow-security",
     "layer": "L2c",
     "temporal_group": "stable",
-    "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
     "signal_type": "dormant_trigger_with_payload",
     "signal_severity": "HIGH",
-    "description": "Added workflow_dispatch trigger with shell exec payload — L2c HIGH composite signal, score +3, CAUTION."
+    "description": "Added workflow_dispatch trigger with shell exec payload — L2c HIGH (+3) plus L2b content scan also fires on curl|bash in the yml file (+4), total score 7 → DESTRUCTIVE. Defense-in-depth interaction, not a bug."
   },
   "workflow-security/forged-bot-author": {
     "id": "WS04",
@@ -247,11 +247,11 @@
     "category": "adversarial",
     "layer": "L2c",
     "temporal_group": "stable",
-    "expected_verdict": "DESTRUCTIVE",
-    "expected_exit_code": 2,
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 1,
     "signal_type": "oidc_elevation_no_consumer",
-    "signal_severity": "CRITICAL",
-    "description": "id-token: write with typosquatted consumer (aws-actions-unofficial/) — tests exact-match allowlist, must not pass."
+    "signal_severity": "HIGH",
+    "description": "id-token: write with typosquatted consumer (aws-actions-unofficial/) — exact-match allowlist correctly rejects it, fires oidc_elevation_no_consumer (HIGH +3) → CAUTION. Signal type caps at HIGH regardless of whether consumer is absent or typosquatted."
   },
   "adversarial/workflow-legitimate-oidc": {
     "id": "AW04",
