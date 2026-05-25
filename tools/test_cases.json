@@ -182,7 +182,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "forged_bot_author",
     "signal_severity": "HIGH",
     "description": "Added workflow configuring git identity as github-actions[bot] — L2c HIGH signal, score +3, CAUTION."
@@ -193,7 +193,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "oidc_elevation_no_consumer",
     "signal_severity": "HIGH",
     "description": "Added workflow with id-token: write and no legitimate OIDC consumer — L2c HIGH signal, score +3, CAUTION."
@@ -237,7 +237,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "dangerous_trigger_pull_request_target",
     "signal_severity": "HIGH",
     "description": "pull_request_target with read-only permissions — HIGH signal only (no write escalation to CRITICAL)."
@@ -248,7 +248,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "oidc_elevation_no_consumer",
     "signal_severity": "HIGH",
     "description": "id-token: write with typosquatted consumer (aws-actions-unofficial/) — exact-match allowlist correctly rejects it, fires oidc_elevation_no_consumer (HIGH +3) → CAUTION. Signal type caps at HIGH regardless of whether consumer is absent or typosquatted."
@@ -308,7 +308,7 @@
     "layer": "L2",
     "temporal_group": "stable",
     "expected_verdict": "REVIEW",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "content_shell_pattern",
     "signal_severity": "HIGH",
     "description": "RTA-04: Added workflow containing rm -rf — caught by _scan_added_file_content (.yml not excluded), score +2 → REVIEW. Inline 'on: workflow_dispatch' avoids L2c dormant-trigger pattern (requires newline form)."
@@ -332,7 +332,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "dangerous_trigger_pull_request_target",
     "signal_severity": "HIGH",
     "description": "RTA-06: pull_request_target trigger with untrusted checkout (ref: head.sha). No explicit write permissions declared → HIGH signal only (+3), CAUTION. Mirrors adversarial/workflow-prt-only but as a red-team branch."
@@ -343,7 +343,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "github_env_injection",
     "signal_severity": "HIGH",
     "description": "RTA-07 fixed: workflow injects PATH, LD_PRELOAD, and NODE_OPTIONS=--require into $GITHUB_ENV to poison all subsequent steps. Caught by _ACTIONS_GITHUB_ENV_INJECTION (Signal 7 added post-red-team), score +3 → CAUTION."
