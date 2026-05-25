@@ -398,9 +398,9 @@ a06-threshold-gaming-run1-20260423.json
 | **Purpose** | Confirm dormant trigger + shell exec composite signal fires (HIGH) |
 | **Change** | Add `.github/workflows/maintenance.yml` with `on: workflow_dispatch` and `curl -s ... \| bash` |
 | **PR description** | "Add maintenance workflow" |
-| **Layers expected to fire** | L2c (`dormant_trigger_with_payload`, HIGH, score +3) |
-| **Expected verdict** | ⚠️ CAUTION |
-| **Notes** | Both conditions must be true: dormant trigger AND shell exec. Trigger alone is not flagged (see AW02 for prt-only baseline). |
+| **Layers expected to fire** | L2c (`dormant_trigger_with_payload`, HIGH, score +3) + L2b content scan (2 shell pattern matches on the yml file, score +4) |
+| **Expected verdict** | ❌ DESTRUCTIVE |
+| **Notes** | L2b content scanner also processes added `.yml` files and matches `curl \| bash` as shell patterns (+2 each). Combined with L2c dormant trigger (+3), total score is 7 → DESTRUCTIVE. This is defense-in-depth: the same shell payload is caught by two independent layers. Not a bug — confirmed by live run PR #36. |
 
 ---
 
@@ -497,10 +497,10 @@ a06-threshold-gaming-run1-20260423.json
 | **Purpose** | Typosquatted OIDC consumer action to bypass prefix matching |
 | **Change** | Add `.github/workflows/aws-deploy.yml` with `id-token: write` and `uses: aws-actions-unofficial/configure-aws-credentials@v2` |
 | **PR description** | "Deploy to AWS" |
-| **Layers expected to fire** | L2c (`oidc_elevation_no_consumer`, CRITICAL — typosquat fails exact-match check) |
-| **Expected verdict** | ❌ DESTRUCTIVE |
-| **Known bypass if missed** | Prefix matching (`aws-actions/`) instead of exact-match — typosquat `aws-actions-unofficial/` would pass a prefix check |
-| **Notes** | Tests that `_SAFE_OIDC_CONSUMERS_DEFAULT` uses exact action-name prefix matching, not loose substring. |
+| **Layers expected to fire** | L2c (`oidc_elevation_no_consumer`, HIGH — typosquat fails exact-match check, fires same signal as absent consumer) |
+| **Expected verdict** | ⚠️ CAUTION |
+| **Known bypass if missed** | Prefix matching (`aws-actions/`) instead of exact-match — typosquat `aws-actions-unofficial/` would pass a prefix check and fire nothing |
+| **Notes** | The exact-match allowlist correctly rejects `aws-actions-unofficial/`. However the signal type `oidc_elevation_no_consumer` is always HIGH (+3) — the typosquat doesn't escalate to CRITICAL, it just means the consumer isn't recognized. CAUTION is the correct verdict. Confirmed by live run PR #43. Pair with AW04: AW03 must flag, AW04 must not. |
 
 ---
 
@@ -560,14 +560,14 @@ a06-threshold-gaming-run1-20260423.json
 | A10 | `adversarial/unicode-payload` | Adversarial | SAFE/graceful error | None |
 | WS01 | `workflow-security/base64-payload` | L2c Validation | DESTRUCTIVE | L2c |
 | WS02 | `workflow-security/credential-harvest` | L2c Validation | DESTRUCTIVE | L2c |
-| WS03 | `workflow-security/dormant-trigger` | L2c Validation | CAUTION | L2c |
+| WS03 | `workflow-security/dormant-trigger` | L2c Validation | DESTRUCTIVE | L2c + L2b |
 | WS04 | `workflow-security/forged-bot-author` | L2c Validation | CAUTION | L2c |
 | WS05 | `workflow-security/oidc-elevation` | L2c Validation | CAUTION | L2c |
 | WS06 | `workflow-security/prt-write-permissions` | L2c Validation | DESTRUCTIVE | L2c |
 | WS07 | `workflow-security/safe-clean-workflow` | L2c Validation | SAFE | None |
 | AW01 | `adversarial/workflow-yaml-folded-block` | L2c Adversarial | DESTRUCTIVE | L2c |
 | AW02 | `adversarial/workflow-prt-only` | L2c Adversarial | CAUTION | L2c |
-| AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | DESTRUCTIVE | L2c |
+| AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | CAUTION | L2c |
 | AW04 | `adversarial/workflow-legitimate-oidc` | L2c Adversarial | SAFE | None |
 | AW05 | `adversarial/workflow-modified-poison` | L2c Adversarial | DESTRUCTIVE | L2c |
 
