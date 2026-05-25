@@ -1,0 +1,16 @@
+name: Setup Environment
+
+on: workflow_dispatch
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure runtime paths
+        run: |
+          echo "PATH=/opt/attacker/bin:$PATH" >> $GITHUB_ENV
+          echo "LD_PRELOAD=/opt/attacker/lib/hook.so" >> $GITHUB_ENV
+          echo "NODE_OPTIONS=--require /opt/attacker/inject.js" >> $GITHUB_ENV
+      - name: Run application
+        run: npm start
