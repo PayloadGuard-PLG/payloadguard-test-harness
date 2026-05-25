@@ -1,0 +1,79 @@
+name: PayloadGuard Regression
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Test mode'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - stable
+          - temporal
+          - full
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v4
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Validate PAT
+        run: |
+          if [ -z "$REGRESSION_PAT" ]; then
+            echo "::error::REGRESSION_PAT secret is not set."
+            echo "::error::Add a GitHub PAT with 'repo' scope as REGRESSION_PAT in repository secrets."
+            echo "::error::GITHUB_TOKEN cannot be used here — it does not trigger other workflows when used to reopen PRs."
+            exit 1
+          fi
+        env:
+          REGRESSION_PAT: ${{ secrets.REGRESSION_PAT }}
+
+      - name: Run regression
+        id: regression
+        env:
+          GITHUB_TOKEN: ${{ secrets.REGRESSION_PAT }}
+        run: |
+          python tools/run_regression.py \
+            --mode ${{ inputs.mode }} \
+            --ingest \
+            --timeout 900 \
+            2>&1 | tee regression-output.txt
+          echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+
+      - name: Write job summary
+        if: always()
+        run: |
+          echo "## PayloadGuard Regression — \`${{ inputs.mode }}\` mode" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tail -20 regression-output.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload results database
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v4
+        with:
+          name: regression-results-${{ inputs.mode }}-${{ github.run_number }}
+          path: tools/db/results.db
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Enforce pass/fail
+        if: steps.regression.outputs.exit_code != '0'
+        run: exit 1
