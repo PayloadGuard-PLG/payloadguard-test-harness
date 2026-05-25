@@ -1,0 +1,15 @@
+name: Build
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clean artifacts
+        run: rm -rf node_modules dist build .cache
+      - name: Install
+        run: npm install
+      - name: Build
+        run: npm run build
