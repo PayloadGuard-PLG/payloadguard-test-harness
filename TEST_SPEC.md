@@ -359,6 +359,179 @@ a06-threshold-gaming-run1-20260423.json
 
 ---
 
+## Track 3 — Layer 2c: GitHub Actions Poisoning (Validation)
+
+*These confirm the seven Layer 2c signal types behave as specified. WS07 is the only safe case — any flag there is a false positive bug.*
+
+---
+
+### WS01 — `workflow-security/base64-payload`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm base64 payload delivery is caught (CRITICAL signal) |
+| **Change** | Add `.github/workflows/base64-delivery.yml` containing `echo "..." \| base64 -d \| bash` |
+| **PR description** | "Add CI pipeline for dependency management" |
+| **Layers expected to fire** | L2c (`base64_payload`, CRITICAL, score +5) |
+| **Expected verdict** | ❌ DESTRUCTIVE |
+| **Notes** | Cleanest CRITICAL signal. Any other layers silent — change is addition-only. Confirm `actions_poisoning.flagged_workflows` has 1 entry with `severity: CRITICAL`. |
+
+---
+
+### WS02 — `workflow-security/credential-harvest`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm AWS metadata endpoint + env grep is caught (CRITICAL signal) |
+| **Change** | Add `.github/workflows/deployment.yml` with `curl http://169.254.169.254/...` and `env \| grep -E 'AWS_\|SECRET'` |
+| **PR description** | "Add deployment workflow" |
+| **Layers expected to fire** | L2c (`credential_harvest`, CRITICAL, score +5) |
+| **Expected verdict** | ❌ DESTRUCTIVE |
+| **Notes** | Two separate patterns in `_ACTIONS_CREDENTIAL_HARVEST` should both match. Confirm signal list has two entries. |
+
+---
+
+### WS03 — `workflow-security/dormant-trigger`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm dormant trigger + shell exec composite signal fires (HIGH) |
+| **Change** | Add `.github/workflows/maintenance.yml` with `on: workflow_dispatch` and `curl -s ... \| bash` |
+| **PR description** | "Add maintenance workflow" |
+| **Layers expected to fire** | L2c (`dormant_trigger_with_payload`, HIGH, score +3) |
+| **Expected verdict** | ⚠️ CAUTION |
+| **Notes** | Both conditions must be true: dormant trigger AND shell exec. Trigger alone is not flagged (see AW02 for prt-only baseline). |
+
+---
+
+### WS04 — `workflow-security/forged-bot-author`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm forged bot identity in git config is caught (HIGH signal) |
+| **Change** | Add `.github/workflows/auto-release.yml` with `git config user.name "github-actions[bot]"` |
+| **PR description** | "Automate release tagging" |
+| **Layers expected to fire** | L2c (`forged_bot_author`, HIGH, score +3) |
+| **Expected verdict** | ⚠️ CAUTION |
+| **Notes** | Tests `_ACTIONS_FORGED_AUTHOR` regex with the canonical impersonation string `github-actions[bot]`. |
+
+---
+
+### WS05 — `workflow-security/oidc-elevation`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm `id-token: write` without a legitimate consumer is flagged (HIGH) |
+| **Change** | Add `.github/workflows/deploy-cloud.yml` with `permissions: id-token: write` and no `aws-actions/`, `google-github-actions/`, or `azure/login` |
+| **PR description** | "Add cloud deployment workflow" |
+| **Layers expected to fire** | L2c (`oidc_elevation_no_consumer`, HIGH, score +3) |
+| **Expected verdict** | ⚠️ CAUTION |
+| **Notes** | Exact-match allowlist must reject prefix variations. See AW03 for typosquat test, AW04 for the safe counterpart. |
+
+---
+
+### WS06 — `workflow-security/prt-write-permissions`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm `pull_request_target` + write permissions escalates to CRITICAL |
+| **Change** | Add `.github/workflows/pr-automation.yml` with `on: pull_request_target` and `permissions: contents: write, pull-requests: write` |
+| **PR description** | "Add PR automation workflow" |
+| **Layers expected to fire** | L2c (`pull_request_target_with_write_permissions`, CRITICAL, score +5) |
+| **Expected verdict** | ❌ DESTRUCTIVE |
+| **Notes** | Two-tier prt scoring: prt alone = HIGH (+3); prt + any write permission = CRITICAL (+5). This tests the CRITICAL path. |
+
+---
+
+### WS07 — `workflow-security/safe-clean-workflow`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm clean legitimate workflow raises no L2c flags |
+| **Change** | Add `.github/workflows/ci-standard.yml` — standard `push`/`pull_request` triggers, `actions/checkout`, `pytest`, no shell injection, `permissions: contents: read` |
+| **PR description** | "Add standard CI workflow" |
+| **Layers expected to fire** | None |
+| **Expected verdict** | ✅ SAFE |
+| **Consistency target** | 3/3 identical |
+| **Notes** | **If this returns anything other than SAFE, it is a confirmed false positive.** Zero-noise baseline for Layer 2c. |
+
+---
+
+## Track 4 — Layer 2c: GitHub Actions Poisoning (Adversarial)
+
+*These probe the hardened detection paths. Failures document known bypass vectors or regression bugs.*
+
+---
+
+### AW01 — `adversarial/workflow-yaml-folded-block`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Base64 payload split across YAML folded block lines to break naive line-by-line regex |
+| **Change** | Add `.github/workflows/build-pipeline.yml` using YAML `>` folded block to spread `base64 -d \| bash` across multiple lines |
+| **PR description** | "Add build pipeline" |
+| **Layers expected to fire** | L2c (`base64_payload`, CRITICAL) after `_normalize_yaml_content()` |
+| **Expected verdict** | ❌ DESTRUCTIVE |
+| **Known bypass if missed** | YAML content normalisation not applied — raw line-by-line match misses folded blocks |
+| **Notes** | This is the primary hardening test. `_normalize_yaml_content()` joins all lines with spaces before applying base64 patterns. If this returns SAFE, normalisation is broken. |
+
+---
+
+### AW02 — `adversarial/workflow-prt-only`
+
+| Field | Value |
+|---|---|
+| **Purpose** | `pull_request_target` without write permissions — should score HIGH not CRITICAL |
+| **Change** | Add `.github/workflows/pr-labeler.yml` with `on: pull_request_target` and `permissions: pull-requests: read, contents: read` |
+| **PR description** | "Add PR labeler" |
+| **Layers expected to fire** | L2c (`dangerous_trigger_pull_request_target`, HIGH, score +3) |
+| **Expected verdict** | ⚠️ CAUTION |
+| **Notes** | Tests the two-tier prt distinction. If this returns DESTRUCTIVE, the escalation logic is wrong. |
+
+---
+
+### AW03 — `adversarial/workflow-typosquatted-oidc`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Typosquatted OIDC consumer action to bypass prefix matching |
+| **Change** | Add `.github/workflows/aws-deploy.yml` with `id-token: write` and `uses: aws-actions-unofficial/configure-aws-credentials@v2` |
+| **PR description** | "Deploy to AWS" |
+| **Layers expected to fire** | L2c (`oidc_elevation_no_consumer`, CRITICAL — typosquat fails exact-match check) |
+| **Expected verdict** | ❌ DESTRUCTIVE |
+| **Known bypass if missed** | Prefix matching (`aws-actions/`) instead of exact-match — typosquat `aws-actions-unofficial/` would pass a prefix check |
+| **Notes** | Tests that `_SAFE_OIDC_CONSUMERS_DEFAULT` uses exact action-name prefix matching, not loose substring. |
+
+---
+
+### AW04 — `adversarial/workflow-legitimate-oidc`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Legitimate OIDC consumer must not be flagged — false positive regression test |
+| **Change** | Add `.github/workflows/aws-deploy-legit.yml` with `id-token: write` and `uses: aws-actions/configure-aws-credentials@v4` |
+| **PR description** | "Deploy to AWS using OIDC" |
+| **Layers expected to fire** | None |
+| **Expected verdict** | ✅ SAFE |
+| **Known false positive if flagged** | Exact-match check incorrectly rejecting canonical consumer |
+| **Notes** | **If this returns CAUTION or DESTRUCTIVE, the OIDC allowlist is broken.** Pair with AW03 — one must pass, one must fail. |
+
+---
+
+### AW05 — `adversarial/workflow-modified-poison`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Poison injected into an existing workflow via modification (change_type = M, not A) |
+| **Change** | Modify existing `.github/workflows/payloadguard.yml` to append `env \| grep -E 'GITHUB_TOKEN\|SECRET'` and `printenv \| awk '/KEY\|TOKEN/{print}'` steps |
+| **PR description** | "Add diagnostic step to CI" |
+| **Layers expected to fire** | L2c (`credential_harvest`, CRITICAL, score +5) |
+| **Expected verdict** | ❌ DESTRUCTIVE |
+| **Known bypass if missed** | Scanner only processes `change_type == 'A'` — existing workflows modified post-merge are invisible |
+| **Notes** | This is the second hardening test. `_scan_github_actions_poisoning()` processes both A and M types. If this returns SAFE, the M-type guard is broken. |
+
+---
+
 ## Summary Table
 
 | ID | Branch | Track | Expected Verdict | Layers |
@@ -385,8 +558,20 @@ a06-threshold-gaming-run1-20260423.json
 | A08 | `adversarial/empty-diff` | Adversarial | SAFE | None |
 | A09 | `adversarial/config-only-deletion` | Adversarial | REVIEW/CAUTION | L2 |
 | A10 | `adversarial/unicode-payload` | Adversarial | SAFE/graceful error | None |
+| WS01 | `workflow-security/base64-payload` | L2c Validation | DESTRUCTIVE | L2c |
+| WS02 | `workflow-security/credential-harvest` | L2c Validation | DESTRUCTIVE | L2c |
+| WS03 | `workflow-security/dormant-trigger` | L2c Validation | CAUTION | L2c |
+| WS04 | `workflow-security/forged-bot-author` | L2c Validation | CAUTION | L2c |
+| WS05 | `workflow-security/oidc-elevation` | L2c Validation | CAUTION | L2c |
+| WS06 | `workflow-security/prt-write-permissions` | L2c Validation | DESTRUCTIVE | L2c |
+| WS07 | `workflow-security/safe-clean-workflow` | L2c Validation | SAFE | None |
+| AW01 | `adversarial/workflow-yaml-folded-block` | L2c Adversarial | DESTRUCTIVE | L2c |
+| AW02 | `adversarial/workflow-prt-only` | L2c Adversarial | CAUTION | L2c |
+| AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | DESTRUCTIVE | L2c |
+| AW04 | `adversarial/workflow-legitimate-oidc` | L2c Adversarial | SAFE | None |
+| AW05 | `adversarial/workflow-modified-poison` | L2c Adversarial | DESTRUCTIVE | L2c |
 
 ---
 
-*PayloadGuard Test Harness v1.1 — 22 branches, 2 tracks*  
+*PayloadGuard Test Harness v1.2 — 34 branches, 4 tracks*  
 *Built to find the limits before production does.*
