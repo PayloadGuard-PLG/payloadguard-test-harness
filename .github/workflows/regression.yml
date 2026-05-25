@@ -1,6 +1,10 @@
 name: PayloadGuard Regression
 
 on:
+  schedule:
+    - cron: '0 2  * * *'   # 02:00 UTC daily
+    - cron: '0 10 * * *'   # 10:00 UTC daily
+    - cron: '0 18 * * *'   # 18:00 UTC daily
   workflow_dispatch:
     inputs:
       mode:
@@ -49,17 +53,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.REGRESSION_PAT }}
         run: |
+          MODE=${{ inputs.mode || 'full' }}
           python tools/run_regression.py \
-            --mode ${{ inputs.mode }} \
+            --mode "$MODE" \
             --ingest \
             --timeout 900 \
             2>&1 | tee regression-output.txt
           echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
 
       - name: Write job summary
         if: always()
         run: |
-          echo "## PayloadGuard Regression — \`${{ inputs.mode }}\` mode" >> "$GITHUB_STEP_SUMMARY"
+          echo "## PayloadGuard Regression — \`${{ steps.regression.outputs.mode }}\` mode" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           tail -20 regression-output.txt >> "$GITHUB_STEP_SUMMARY"
@@ -69,7 +75,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v4
         with:
-          name: regression-results-${{ inputs.mode }}-${{ github.run_number }}
+          name: regression-results-${{ steps.regression.outputs.mode }}-${{ github.run_number }}
           path: tools/db/results.db
           if-no-files-found: warn
           retention-days: 90
