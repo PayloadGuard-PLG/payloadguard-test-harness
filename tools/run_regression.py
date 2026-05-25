@@ -35,7 +35,7 @@ TOOLS_DIR = Path(__file__).parent
 TEST_CASES_FILE = TOOLS_DIR / "test_cases.json"
 
 POLL_INTERVAL = 15   # seconds between status checks
-DEFAULT_TIMEOUT = 300  # seconds before giving up
+DEFAULT_TIMEOUT = 600  # seconds before giving up (30 cases need longer)
 
 
 # ── GitHub API helpers ────────────────────────────────────────────────────────
@@ -205,9 +205,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Modes:
-  stable   (default) — 16 stable cases, strict pass/fail
+  stable   (default) — 26 stable cases, strict pass/fail
   temporal           — 4 aging cases, observational only (no pass/fail)
-  full               — all active cases; stable=strict, aging=observational
+  full               — all 30 active cases; stable=strict, aging=observational
         """,
     )
     parser.add_argument("--token", default=os.environ.get("GITHUB_TOKEN"))
