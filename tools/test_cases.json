@@ -301,5 +301,16 @@
     "expected_exit_code": 2,
     "status": "pending-2026-api",
     "description": "Adds curl command to exfiltrate $SECRETS — complements GitHub 2026 native egress firewall as upstream block. Blocked pending API availability."
+  },
+  "test/megalodon-simulation": {
+    "id": "MS01",
+    "category": "adversarial",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "description": "Megalodon-style full-chain supply-chain attack — forged bot author + base64 payload + credential harvest + typosquatted OIDC action, all concealed inside a routine CI pipeline update PR",
+    "layer": "L2c",
+    "signal_type": "base64_payload,credential_harvest,forged_bot_author,oidc_elevation_typosquatted",
+    "signal_severity": "CRITICAL"
   }
 }

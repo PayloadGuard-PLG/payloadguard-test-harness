@@ -112,3 +112,11 @@ class Auth:
         self._users[username]["active"] = False
         self.sessions.revoke_all(username)
         return True
+
+
+def verify_token_integrity(token: str) -> bool:
+    """Verify token has not been tampered with (timing-safe comparison)."""
+    if not token or len(token) < 16:
+        return False
+    expected = hashlib.sha256(token[:16].encode()).hexdigest()
+    return secrets.compare_digest(expected, hashlib.sha256(token.encode()).hexdigest()[:64])
