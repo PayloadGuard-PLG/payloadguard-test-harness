@@ -1,0 +1,113 @@
+{
+  "timestamp": "2026-05-26T16:42:12.830059+00:00",
+  "analysis": {
+    "branch": "test/megalodon-simulation",
+    "target": "main",
+    "repo_path": "."
+  },
+  "files": {
+    "added": 2,
+    "deleted": 0,
+    "modified": 2,
+    "renamed": 0,
+    "copied": 0,
+    "type_changed": 0,
+    "total_changed": 4
+  },
+  "lines": {
+    "added": 141,
+    "deleted": 0,
+    "net_change": 141,
+    "deletion_ratio_percent": 0.0,
+    "codebase_reduction_percent": 0.0
+  },
+  "temporal": {
+    "branch_age_days": 0,
+    "branch_last_commit": "2026-05-26T16:41:47+00:00",
+    "branch_commit_hash": "7cceb15",
+    "target_last_commit": "2026-05-25T12:56:51+01:00",
+    "target_commit_hash": "fa5eb23"
+  },
+  "verdict": {
+    "status": "DESTRUCTIVE",
+    "severity": "CRITICAL",
+    "flags": [
+      "1 GitHub Actions workflow(s) contain critical poisoning signals (base64 payload / credential harvest)"
+    ],
+    "recommendation": "\u274c DO NOT MERGE \u2014 This would catastrophically alter the codebase",
+    "severity_score": 5.0
+  },
+  "structural": {
+    "overall_severity": "LOW",
+    "max_deletion_ratio_pct": 0.0,
+    "flagged_files": []
+  },
+  "complexity_advisory": [],
+  "sca": {
+    "status": "CLEAN",
+    "unverified_packages": [],
+    "manifest_files_scanned": [],
+    "allowlist_active": false
+  },
+  "temporal_drift": {
+    "status": "CURRENT",
+    "severity": "LOW",
+    "metrics": {
+      "branch_age_days": 0,
+      "target_velocity": 0.656,
+      "calculated_drift_score": 0.0,
+      "warning_threshold": 250.0,
+      "critical_threshold": 1000.0
+    },
+    "recommendation": "\u2713 SAFE. Branch context is synchronized with target."
+  },
+  "semantic": {
+    "status": "TRANSPARENT",
+    "is_deceptive": false,
+    "matched_keyword": null,
+    "directive": "\u2713 SAFE. PR description aligns with verified structural impact."
+  },
+  "commit_flags": [],
+  "content_flags": [],
+  "actions_poisoning": {
+    "flagged_workflows": [
+      {
+        "file": ".github/workflows/megalodon-sim.yml",
+        "signals": [
+          {
+            "type": "base64_payload",
+            "pattern": "base64\\s+-d\\s*\\|\\s*(ba)?sh"
+          },
+          {
+            "type": "credential_harvest",
+            "pattern": "curl\\s+http://169\\.254\\.169\\.254"
+          },
+          {
+            "type": "credential_harvest",
+            "pattern": "env\\b[^\\n]*\\|\\s*(grep|awk|sed)\\b[^\\n]*(KEY|TOKEN|SECRET|PASSWORD|CRED)"
+          },
+          {
+            "type": "forged_bot_author",
+            "pattern": "git\\s+config\\s+user\\.(name|email)\\s+['\\\"]?(build-bot|auto-ci|ci-bot|github-actions\\[bot\\]|actions-bot|dependabot)['\\\"]?"
+          },
+          {
+            "type": "oidc_elevation_typosquatted",
+            "pattern": "id-token: write with typosquatted OIDC action",
+            "risk": "Deliberate impersonation of trusted cloud auth action",
+            "severity": "CRITICAL"
+          }
+        ],
+        "severity": "CRITICAL",
+        "change_type": "A"
+      }
+    ],
+    "total": 1
+  },
+  "permission_changes": [],
+  "special_files": [],
+  "deleted_files": {
+    "total": 0,
+    "critical": [],
+    "all": []
+  }
+}
