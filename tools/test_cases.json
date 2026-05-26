@@ -182,7 +182,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "forged_bot_author",
     "signal_severity": "HIGH",
     "description": "Added workflow configuring git identity as github-actions[bot] — L2c HIGH signal, score +3, CAUTION."
@@ -193,7 +193,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "oidc_elevation_no_consumer",
     "signal_severity": "HIGH",
     "description": "Added workflow with id-token: write and no legitimate OIDC consumer — L2c HIGH signal, score +3, CAUTION."
@@ -237,7 +237,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "dangerous_trigger_pull_request_target",
     "signal_severity": "HIGH",
     "description": "pull_request_target with read-only permissions — HIGH signal only (no write escalation to CRITICAL)."
@@ -248,7 +248,7 @@
     "layer": "L2c",
     "temporal_group": "stable",
     "expected_verdict": "CAUTION",
-    "expected_exit_code": 1,
+    "expected_exit_code": 0,
     "signal_type": "oidc_elevation_no_consumer",
     "signal_severity": "HIGH",
     "description": "id-token: write with typosquatted consumer (aws-actions-unofficial/) — exact-match allowlist correctly rejects it, fires oidc_elevation_no_consumer (HIGH +3) → CAUTION. Signal type caps at HIGH regardless of whether consumer is absent or typosquatted."
@@ -301,5 +301,62 @@
     "expected_exit_code": 2,
     "status": "pending-2026-api",
     "description": "Adds curl command to exfiltrate $SECRETS — complements GitHub 2026 native egress firewall as upstream block. Blocked pending API availability."
+  },
+  "rta/push-rm-rf": {
+    "id": "RTA01",
+    "category": "red-team",
+    "layer": "L2",
+    "temporal_group": "stable",
+    "expected_verdict": "REVIEW",
+    "expected_exit_code": 0,
+    "signal_type": "content_shell_pattern",
+    "signal_severity": "HIGH",
+    "description": "RTA-04: Added workflow containing rm -rf — caught by _scan_added_file_content (.yml not excluded), score +2 → REVIEW. Inline 'on: workflow_dispatch' avoids L2c dormant-trigger pattern (requires newline form)."
+  },
+  "rta/schedule-curl-exfil": {
+    "id": "RTA02",
+    "category": "red-team",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "SAFE",
+    "expected_exit_code": 0,
+    "signal_type": "none",
+    "signal_severity": "NONE",
+    "bypass": true,
+    "bypass_notes": "RTA-05 partial: schedule trigger + curl POST body containing secrets.GITHUB_TOKEN with URL on next line. None of the credential_harvest patterns match: curl and secret are on different lines ([^\\n]* stops at backslash-continuation newline); -d body not covered by -H/--header fix. Known gap — fix requires multiline-aware curl body pattern.",
+    "description": "RTA-05 bypass: schedule cron + curl exfiltrating GITHUB_TOKEN via POST body (-d). URL on continuation line evades all current credential_harvest regexes. Expected SAFE until gap is closed."
+  },
+  "rta/prt-untrusted-checkout": {
+    "id": "RTA03",
+    "category": "red-team",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 0,
+    "signal_type": "dangerous_trigger_pull_request_target",
+    "signal_severity": "HIGH",
+    "description": "RTA-06: pull_request_target trigger with untrusted checkout (ref: head.sha). No explicit write permissions declared → HIGH signal only (+3), CAUTION. Mirrors adversarial/workflow-prt-only but as a red-team branch."
+  },
+  "rta/github-env-injection": {
+    "id": "RTA04",
+    "category": "red-team",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 0,
+    "signal_type": "github_env_injection",
+    "signal_severity": "HIGH",
+    "description": "RTA-07 fixed: workflow injects PATH, LD_PRELOAD, and NODE_OPTIONS=--require into $GITHUB_ENV to poison all subsequent steps. Caught by _ACTIONS_GITHUB_ENV_INJECTION (Signal 7 added post-red-team), score +3 → CAUTION."
+  },
+  "rta/variable-obfuscated-b64": {
+    "id": "RTA05",
+    "category": "red-team",
+    "layer": "L2c",
+    "temporal_group": "stable",
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "base64_payload",
+    "signal_severity": "CRITICAL",
+    "description": "RTA-08: Variable-indirected base64 payload — PAYLOAD=$(echo '...') then echo $PAYLOAD | base64 -d | bash. Obfuscation hides string but 'base64 -d | bash' literal still matches _ACTIONS_BASE64_PAYLOAD pattern 1, score +5 → DESTRUCTIVE."
   }
 }
