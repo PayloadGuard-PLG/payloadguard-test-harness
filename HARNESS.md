@@ -9,7 +9,7 @@ Reference implementation for validating CI/CD consequence analysis tools under a
 
 ## Overview
 
-This harness maintains 18 permanent branches, each representing a distinct scenario that PayloadGuard must handle correctly. A full regression cycle reopens all 18 as pull requests, waits for PayloadGuard to scan each, closes them, and ingests the results into a local SQLite database for analysis.
+This harness maintains 33 permanent branches, each representing a distinct scenario that PayloadGuard must handle correctly. A full regression cycle reopens all active branches as pull requests, waits for PayloadGuard to scan each, closes them, and ingests the results into a local SQLite database for analysis.
 
 The suite covers five scenario families:
 
@@ -20,8 +20,8 @@ The suite covers five scenario families:
 | `boundary` | 1 | Metrics just above threshold — confirms score crosses boundary |
 | `semantic` | 2 | Transparency and description alignment |
 | `multilang` | 1 | Parser stress test across JS, TS, Go |
-| `adversarial` | 9 | Purpose-built evasion techniques |
-| `workflow-security` | 3 | Reserved for GitHub 2026 API features (pending) |
+| `adversarial` | 14 | Purpose-built evasion techniques + red-team simulations |
+| `workflow-security` | 10 | L2c signal coverage + pending GitHub 2026 API features |
 
 ---
 
@@ -51,6 +51,24 @@ The `temporal_group` column indicates how each case is treated by the regression
 | A07 | adversarial/new-file-replacement | adversarial | stable | DESTRUCTIVE | auth.py deleted, auth_v2.py stub added |
 | A09 | adversarial/config-only-deletion | adversarial | stable | DESTRUCTIVE | settings.yml + requirements.txt deleted |
 | A10 | adversarial/unicode-payload | adversarial | aging | SAFE | Hostile Unicode in comments, +4/-1 — robustness test |
+| WS01 | workflow-security/base64-payload | workflow-security | stable | DESTRUCTIVE | base64_payload CRITICAL — L2c signal test |
+| WS02 | workflow-security/credential-harvest | workflow-security | stable | DESTRUCTIVE | credential_harvest CRITICAL — AWS metadata + env dump |
+| WS03 | workflow-security/dormant-trigger | workflow-security | stable | DESTRUCTIVE | dormant_trigger_with_payload HIGH + L2b content scan |
+| WS04 | workflow-security/forged-bot-author | workflow-security | stable | CAUTION | forged_bot_author HIGH — git config bot identity |
+| WS05 | workflow-security/oidc-elevation | workflow-security | stable | CAUTION | oidc_elevation_no_consumer HIGH — no OIDC consumer |
+| WS06 | workflow-security/prt-write-permissions | workflow-security | stable | DESTRUCTIVE | pull_request_target + write permissions CRITICAL |
+| WS07 | workflow-security/safe-clean-workflow | workflow-security | stable | SAFE | Clean workflow — no false positive check |
+| AW01 | adversarial/workflow-yaml-folded-block | adversarial | stable | DESTRUCTIVE | base64 split across YAML folded block lines |
+| AW02 | adversarial/workflow-prt-only | adversarial | stable | CAUTION | pull_request_target alone (no write perms) HIGH |
+| AW03 | adversarial/workflow-typosquatted-oidc | adversarial | stable | DESTRUCTIVE | oidc_elevation_typosquatted CRITICAL — aws-actions-unofficial/ |
+| AW04 | adversarial/workflow-legitimate-oidc | adversarial | stable | SAFE | Legitimate aws-actions/ consumer — no false positive |
+| AW05 | adversarial/workflow-modified-poison | adversarial | stable | DESTRUCTIVE | Poisoned workflow via M-type diff (not just A-type) |
+| RTA01 | rta/push-rm-rf | adversarial | stable | REVIEW | rm -rf in workflow — L2 content scan |
+| RTA02 | rta/schedule-curl-exfil | adversarial | stable | SAFE | Known bypass — curl POST body multiline (unfixed) |
+| RTA03 | rta/prt-untrusted-checkout | adversarial | stable | CAUTION | pull_request_target + untrusted head.sha checkout |
+| RTA04 | rta/github-env-injection | adversarial | stable | CAUTION | PATH/LD_PRELOAD via $GITHUB_ENV — Signal 7 |
+| RTA05 | rta/variable-obfuscated-b64 | adversarial | stable | DESTRUCTIVE | Variable-obfuscated base64 payload |
+| MS01 | test/megalodon-simulation | adversarial | stable | DESTRUCTIVE | Full-chain: forged author + base64 + cred harvest + typosquatted OIDC |
 | T23 | workflow-security/dependency-lock-tampering | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
 | T24 | workflow-security/policy-bypass | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
 | T25 | workflow-security/secret-exfiltration | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
