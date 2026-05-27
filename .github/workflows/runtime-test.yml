@@ -1,8 +1,14 @@
-name: RT02-postinstall-curl
+name: RT03-ptrace-self
 on: [pull_request]
 jobs:
-  rt02:
+  rt03:
     runs-on: ubuntu-latest
     steps:
-      - name: RT02 — loopback curl (127.0.0.1 always in egress allowlist)
-        run: curl -s --connect-timeout 1 http://127.0.0.1:9999 || true
+      - name: RT03 — PTRACE_TRACEME self-attach (safe, no cross-process targeting)
+        run: |
+          python3 -c "
+          import ctypes
+          libc = ctypes.CDLL('libc.so.6', use_errno=True)
+          libc.ptrace(0, 0, 0, 0)  # PTRACE_TRACEME=0, attaches to own process
+          print('RT03: PTRACE_TRACEME complete')
+          "
