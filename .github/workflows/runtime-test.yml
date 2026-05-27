@@ -1,14 +1,8 @@
-name: RT01-procmem-read
+name: RT02-postinstall-curl
 on: [pull_request]
 jobs:
-  rt01:
+  rt02:
     runs-on: ubuntu-latest
     steps:
-      - name: RT01 — open /proc/self/mem (own PID, safe, audit-only)
-        run: |
-          python3 -c "
-          import os
-          fd = os.open('/proc/self/mem', os.O_RDONLY)
-          os.close(fd)
-          print('RT01: /proc/self/mem open+close (self only)')
-          " 2>/dev/null || true
+      - name: RT02 — loopback curl (127.0.0.1 always in egress allowlist)
+        run: curl -s --connect-timeout 1 http://127.0.0.1:9999 || true
