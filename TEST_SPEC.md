@@ -1,6 +1,6 @@
 # PayloadGuard Test Harness — Branch Specification
 
-**Version:** 1.1  
+**Version:** 1.3  
 **Repo:** `payloadguard-test-harness`  
 **Reports land in:** `payload-consequence-analyser/test-reports/runs/`
 
@@ -570,8 +570,60 @@ a06-threshold-gaming-run1-20260423.json
 | AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | CAUTION | L2c |
 | AW04 | `adversarial/workflow-legitimate-oidc` | L2c Adversarial | SAFE | None |
 | AW05 | `adversarial/workflow-modified-poison` | L2c Adversarial | DESTRUCTIVE | L2c |
+| RTA01 | `rta/push-rm-rf` | Red Team | REVIEW | L2 |
+| RTA02 | `rta/schedule-curl-exfil` | Red Team | SAFE (known bypass) | None |
+| RTA03 | `rta/prt-untrusted-checkout` | Red Team | CAUTION | L2c |
+| RTA04 | `rta/github-env-injection` | Red Team | CAUTION | L2c |
+| RTA05 | `rta/variable-obfuscated-b64` | Red Team | DESTRUCTIVE | L2c |
+| RT01 | `runtime/procmem-read` | Runtime | SAFE | L5c (advisory) |
+| RT02 | `runtime/postinstall-curl` | Runtime | SAFE | L5c (advisory) |
+| RT03 | `runtime/ptrace-self` | Runtime | SAFE | L5c (advisory) |
 
 ---
 
-*PayloadGuard Test Harness v1.2 — 34 branches, 4 tracks*  
-*Built to find the limits before production does.*
+## Track 5 — L5c Runtime Agent
+
+*These verify the eBPF runtime agent emits events for the three tracepoint types. The static scan verdict is SAFE in all cases — the diff changes are benign. The layer fires in advisory mode only; no score impact.*
+
+---
+
+### RT01 — `runtime/procmem-read`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm the agent emits a `procmem_open` event when a workflow opens `/proc/self/mem` |
+| **Change** | Workflow step that opens `/proc/self/mem` (own PID only — no cross-process read) |
+| **PR description** | "Add diagnostics step" |
+| **Layers expected to fire** | L5c — `procmem_open` event emitted in audit mode |
+| **Expected verdict** | ✅ SAFE |
+| **Notes** | Static scan: SAFE — no destructive code changes. eBPF agent event is advisory. Confirms `trace_openat` tracepoint fires on `/proc` path prefix. |
+
+---
+
+### RT02 — `runtime/postinstall-curl`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm the agent emits an `egress_connect` event on an outbound connection |
+| **Change** | Workflow step that curls `127.0.0.1:9999` (loopback — always in the default allowlist) |
+| **PR description** | "Add health check step" |
+| **Layers expected to fire** | L5c — `egress_connect` event emitted; loopback is allowed, `blocked: 0` |
+| **Expected verdict** | ✅ SAFE |
+| **Notes** | Static scan: SAFE. Loopback is in the default egress allowlist — event fires but no block signal. Confirms `trace_connect` tracepoint and allowlist lookup. |
+
+---
+
+### RT03 — `runtime/ptrace-self`
+
+| Field | Value |
+|---|---|
+| **Purpose** | Confirm the agent emits a `ptrace_attach` event on `PTRACE_TRACEME` |
+| **Change** | Workflow step that calls `PTRACE_TRACEME` (self-attach — no cross-process threat) |
+| **PR description** | "Add debugger compatibility step" |
+| **Layers expected to fire** | L5c — `ptrace_attach` event emitted in audit mode |
+| **Expected verdict** | ✅ SAFE |
+| **Notes** | Static scan: SAFE. `PTRACE_TRACEME` (request=0) is included in the filter alongside `PTRACE_ATTACH` (16) and `PTRACE_SEIZE` (0x4206). Confirms the three-value ptrace filter added in the BPF-3 fix. |
+
+---
+
+*PayloadGuard Test Harness v1.3 — 41 cases, 5 tracks*
