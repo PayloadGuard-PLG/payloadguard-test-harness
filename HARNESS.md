@@ -9,9 +9,7 @@ Reference implementation for validating CI/CD consequence analysis tools under a
 
 ## Overview
 
-This harness maintains 33 permanent branches, each representing a distinct scenario that PayloadGuard must handle correctly. A full regression cycle reopens all active branches as pull requests, waits for PayloadGuard to scan each, closes them, and ingests the results into a local SQLite database for analysis.
-
-The suite covers five scenario families:
+This harness registers 41 test cases across 38 active branches. Three cases (T23–T25) are reserved and have no branches — they will be created when the GitHub 2026 APIs they depend on are available. A full regression cycle reopens all active branches as pull requests, waits for PayloadGuard to scan each, closes them, and ingests the results into a local SQLite database for analysis.
 
 | Category | Count | Purpose |
 |---|---|---|
@@ -20,8 +18,10 @@ The suite covers five scenario families:
 | `boundary` | 1 | Metrics just above threshold — confirms score crosses boundary |
 | `semantic` | 2 | Transparency and description alignment |
 | `multilang` | 1 | Parser stress test across JS, TS, Go |
-| `adversarial` | 14 | Purpose-built evasion techniques + red-team simulations |
-| `workflow-security` | 10 | L2c signal coverage + pending GitHub 2026 API features |
+| `adversarial` | 14 | Static evasion techniques: deletion obfuscation, threshold gaming, workflow poisoning bypasses |
+| `red-team` | 5 | Live red-team findings from the 2026-05-25 session — confirmed detections and known bypasses |
+| `runtime` | 3 | L5c eBPF agent event coverage — procmem, egress, ptrace (advisory, no score impact) |
+| `workflow-security` | 10 | L2c signal coverage (7 active) + pending GitHub 2026 API features (3 reserved) |
 
 ---
 
@@ -63,12 +63,14 @@ The `temporal_group` column indicates how each case is treated by the regression
 | AW03 | adversarial/workflow-typosquatted-oidc | adversarial | stable | DESTRUCTIVE | oidc_elevation_typosquatted CRITICAL — aws-actions-unofficial/ |
 | AW04 | adversarial/workflow-legitimate-oidc | adversarial | stable | SAFE | Legitimate aws-actions/ consumer — no false positive |
 | AW05 | adversarial/workflow-modified-poison | adversarial | stable | DESTRUCTIVE | Poisoned workflow via M-type diff (not just A-type) |
-| RTA01 | rta/push-rm-rf | adversarial | stable | REVIEW | rm -rf in workflow — L2 content scan |
-| RTA02 | rta/schedule-curl-exfil | adversarial | stable | SAFE | Known bypass — curl POST body multiline (unfixed) |
-| RTA03 | rta/prt-untrusted-checkout | adversarial | stable | CAUTION | pull_request_target + untrusted head.sha checkout |
-| RTA04 | rta/github-env-injection | adversarial | stable | CAUTION | PATH/LD_PRELOAD via $GITHUB_ENV — Signal 7 |
-| RTA05 | rta/variable-obfuscated-b64 | adversarial | stable | DESTRUCTIVE | Variable-obfuscated base64 payload |
-| MS01 | test/megalodon-simulation | adversarial | stable | DESTRUCTIVE | Full-chain: forged author + base64 + cred harvest + typosquatted OIDC |
+| RTA01 | rta/push-rm-rf | red-team | stable | REVIEW | rm -rf in workflow — L2 content scan |
+| RTA02 | rta/schedule-curl-exfil | red-team | stable | SAFE | Known bypass — curl POST body multiline (unfixed) |
+| RTA03 | rta/prt-untrusted-checkout | red-team | stable | CAUTION | pull_request_target + untrusted head.sha checkout |
+| RTA04 | rta/github-env-injection | red-team | stable | CAUTION | PATH/LD_PRELOAD via $GITHUB_ENV — Signal 7 |
+| RTA05 | rta/variable-obfuscated-b64 | red-team | stable | DESTRUCTIVE | Variable-obfuscated base64 payload |
+| RT01 | runtime/procmem-read | runtime | stable | SAFE | Opens /proc/self/mem — eBPF emits procmem_open event (advisory) |
+| RT02 | runtime/postinstall-curl | runtime | stable | SAFE | Curls loopback 127.0.0.1:9999 — eBPF emits egress_connect (loopback allowed) |
+| RT03 | runtime/ptrace-self | runtime | stable | SAFE | PTRACE_TRACEME self-attach — eBPF emits ptrace_attach event (advisory) |
 | T23 | workflow-security/dependency-lock-tampering | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
 | T24 | workflow-security/policy-bypass | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
 | T25 | workflow-security/secret-exfiltration | workflow-security | stable | DESTRUCTIVE | **Pending GitHub 2026 API** |
@@ -87,7 +89,7 @@ export GITHUB_TOKEN=ghp_...   # needs: repo, pull_requests, actions:read
 ### Full cycle
 
 ```bash
-# Standard regression — 16 stable cases, strict pass/fail
+# Standard regression — 34 stable cases, strict pass/fail
 python tools/run_regression.py --token "$GITHUB_TOKEN" --ingest
 
 # Observe temporal drift — 4 aging cases, no pass/fail
@@ -95,6 +97,9 @@ python tools/run_regression.py --token "$GITHUB_TOKEN" --mode temporal
 
 # Full audit — all active cases (stable=strict, aging=observational)
 python tools/run_regression.py --token "$GITHUB_TOKEN" --mode full --ingest
+
+# L5c runtime cases only (RT01–RT03)
+python tools/run_regression.py --token "$GITHUB_TOKEN" --mode runtime
 
 # Ingest only (if scans already ran)
 python tools/ingest.py --token "$GITHUB_TOKEN"
@@ -109,7 +114,7 @@ python tools/dashboard.py
 ```
 run_regression.py
   --token TOKEN       GitHub token (or set GITHUB_TOKEN env var)
-  --mode MODE         stable (default) | temporal | full
+  --mode MODE         stable (default) | temporal | full | runtime
   --ingest            Chain to ingest.py after all scans complete
   --dry-run           Print what would be reopened without acting
   --timeout N         Seconds to wait for scans (default: 300)

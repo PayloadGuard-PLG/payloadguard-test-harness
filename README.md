@@ -23,19 +23,29 @@ payloadguard-test-harness/
 ├── test_auth.py         # 5 auth tests
 ├── test_database.py     # 5 database tests
 ├── settings.yml         # App configuration
-├── TEST_SPEC.md         # 22 branch specifications
+├── HARNESS.md           # Full test case matrix (41 cases, 9 categories)
+├── TEST_SPEC.md         # Per-branch specifications: change, expected layers, verdict
 └── requirements.txt
 ```
 
 ## Test Branches
 
-Branches are organised into two tracks:
+41 test cases across 9 categories. See [`HARNESS.md`](HARNESS.md) for the full matrix and [`TEST_SPEC.md`](TEST_SPEC.md) for per-branch specifications.
 
-**Track 1 — Validation** (`safe/`, `destructive/`, `boundary/`, `mixed/`, `semantic/`)
-Confirms PayloadGuard behaves as designed.
+**Track 1 — Validation** (`safe/`, `destructive/`, `boundary/`, `semantic/`, `multilang/`)
+Confirms PayloadGuard behaves as specified on canonical inputs.
 
 **Track 2 — Adversarial** (`adversarial/`)
-Deliberately crafted to probe limitations. Results are documented as known boundaries, not bugs.
+Static evasion techniques: deletion obfuscation, threshold gaming, workflow poisoning bypasses.
+
+**Track 3 — Workflow Security** (`workflow-security/`)
+L2c signal coverage — 7 active cases, 3 reserved for pending GitHub 2026 API features.
+
+**Track 4 — Red Team** (`rta/`)
+Live findings from the 2026-05-25 red-team session. Confirmed detections (RTA01, RTA03–05) and known bypass (RTA02).
+
+**Track 5 — Runtime** (`runtime/`)
+L5c eBPF agent event coverage — procmem, egress, and ptrace scenarios. Static verdict is SAFE; layer fires advisory events only.
 
 ## Reports
 
