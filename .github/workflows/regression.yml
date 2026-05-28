@@ -2,9 +2,9 @@ name: PayloadGuard Regression
 
 on:
   schedule:
-    - cron: '0 2  * * *'   # 02:00 UTC daily
-    - cron: '0 10 * * *'   # 10:00 UTC daily
-    - cron: '0 18 * * *'   # 18:00 UTC daily
+    - cron: '0 2 * * *'   # 02:00 UTC daily — drift observation (full mode)
+  repository_dispatch:
+    types: [analyser-updated]   # fired by payload-consequence-analyser on push to main
   workflow_dispatch:
     inputs:
       mode:
@@ -53,14 +53,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.REGRESSION_PAT }}
         run: |
-          MODE=${{ inputs.mode || 'full' }}
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            MODE="stable"
+          else
+            MODE="${{ inputs.mode || 'full' }}"
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           python tools/run_regression.py \
             --mode "$MODE" \
             --ingest \
             --timeout 900 \
             2>&1 | tee regression-output.txt
           echo "exit_code=${PIPESTATUS[0]}" >> "$GITHUB_OUTPUT"
-          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
 
       - name: Write job summary
         if: always()
