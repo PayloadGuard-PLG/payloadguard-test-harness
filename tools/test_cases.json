@@ -358,5 +358,35 @@
     "signal_type": "base64_payload",
     "signal_severity": "CRITICAL",
     "description": "RTA-08: Variable-indirected base64 payload — PAYLOAD=$(echo '...') then echo $PAYLOAD | base64 -d | bash. Obfuscation hides string but 'base64 -d | bash' literal still matches _ACTIONS_BASE64_PAYLOAD pattern 1, score +5 → DESTRUCTIVE."
+  },
+  "runtime/procmem-read": {
+    "id": "RT01",
+    "category": "runtime",
+    "layer": "L5c",
+    "temporal_group": "stable",
+    "expected_verdict": "SAFE",
+    "expected_exit_code": 0,
+    "signal_type": "procmem_access",
+    "description": "RT01: Workflow opens /proc/self/mem (own PID only, safe). PLG static scan: SAFE — no destructive code changes. eBPF agent emits procmem_open event in audit mode (advisory, no score impact)."
+  },
+  "runtime/postinstall-curl": {
+    "id": "RT02",
+    "category": "runtime",
+    "layer": "L5c",
+    "temporal_group": "stable",
+    "expected_verdict": "SAFE",
+    "expected_exit_code": 0,
+    "signal_type": "egress_connect",
+    "description": "RT02: Workflow curls loopback 127.0.0.1:9999 (always allowed). PLG static scan: SAFE. eBPF agent emits egress_connect event; loopback is in the default allowlist."
+  },
+  "runtime/ptrace-self": {
+    "id": "RT03",
+    "category": "runtime",
+    "layer": "L5c",
+    "temporal_group": "stable",
+    "expected_verdict": "SAFE",
+    "expected_exit_code": 0,
+    "signal_type": "ptrace_attempt",
+    "description": "RT03: Workflow calls PTRACE_TRACEME (self-attach only, no cross-process threat). PLG static scan: SAFE. eBPF agent emits ptrace_attach event in audit mode."
   }
 }

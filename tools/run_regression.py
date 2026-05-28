@@ -218,8 +218,8 @@ Modes:
     parser.add_argument("--dry-run", action="store_true",
                         help="Print what would happen without touching GitHub")
     parser.add_argument(
-        "--mode", choices=["stable", "temporal", "full"], default="stable",
-        help="stable=strict regression (default), temporal=aging observation, full=both",
+        "--mode", choices=["stable", "temporal", "full", "runtime"], default="stable",
+        help="stable=strict regression (default), temporal=aging observation, full=both, runtime=RT01-RT03 only",
     )
     args = parser.parse_args()
 
@@ -240,6 +240,12 @@ Modes:
         active_branches = {
             b for b, tc in test_cases.items()
             if tc.get("temporal_group") == "aging"
+        }
+    elif args.mode == "runtime":
+        active_branches = {
+            b for b, tc in test_cases.items()
+            if tc.get("category") == "runtime"
+            and tc.get("status") != "pending-2026-api"
         }
     else:  # full
         active_branches = {
