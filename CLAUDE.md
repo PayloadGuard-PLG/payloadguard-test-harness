@@ -3,9 +3,8 @@
 ## Handover (update this block at the end of every session)
 
 - **Branch for next work:** create a new branch from main
-- **Status:** 41 test cases registered across 9 categories, 38 active branches + 3 pending GitHub 2026 API
-- **RT01–RT03 (runtime/) added:** L5c eBPF agent coverage — procmem, egress, ptrace. All three return SAFE from static scan; agent fires advisory events only. Registered in test_cases.json, HARNESS.md matrix, and TEST_SPEC.md Track 5.
-- **Last update:** 2026-05-28 — docs sync: HARNESS.md, TEST_SPEC.md, README.md updated to reflect 41 cases (added red-team and runtime categories, fixed branch counts and mode descriptions)
+- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. Docs in sync.
+- **Regression trigger:** `regression.yml` now accepts `repository_dispatch` (type: `analyser-updated`) fired by the analyser on push to main. Runs `stable` mode (34 cases, strict). Daily schedule at 02:00 UTC runs `full` mode for drift observation. Requires `REGRESSION_PAT` secret in both repos.
 
 ---
 
