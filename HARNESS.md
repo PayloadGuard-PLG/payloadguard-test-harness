@@ -64,7 +64,7 @@ The `temporal_group` column indicates how each case is treated by the regression
 | AW04 | adversarial/workflow-legitimate-oidc | adversarial | stable | SAFE | Legitimate aws-actions/ consumer — no false positive |
 | AW05 | adversarial/workflow-modified-poison | adversarial | stable | DESTRUCTIVE | Poisoned workflow via M-type diff (not just A-type) |
 | RTA01 | rta/push-rm-rf | red-team | stable | REVIEW | rm -rf in workflow — L2 content scan |
-| RTA02 | rta/schedule-curl-exfil | red-team | stable | SAFE | Known bypass — curl POST body multiline (unfixed) |
+| RTA02 | rta/schedule-curl-exfil | red-team | stable | DESTRUCTIVE | Fixed in v1.2.0 — `_normalize_yaml_content()` applied to credential_harvest loop |
 | RTA03 | rta/prt-untrusted-checkout | red-team | stable | CAUTION | pull_request_target + untrusted head.sha checkout |
 | RTA04 | rta/github-env-injection | red-team | stable | CAUTION | PATH/LD_PRELOAD via $GITHUB_ENV — Signal 7 |
 | RTA05 | rta/variable-obfuscated-b64 | red-team | stable | DESTRUCTIVE | Variable-obfuscated base64 payload |

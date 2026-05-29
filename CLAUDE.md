@@ -43,9 +43,9 @@ Each branch holds a specific scenario. The regression runner reopens each as a P
 - **stable** — strict pass/fail in every regression run
 - **aging** — observational only; verdict drifts with branch age (T01, T02, T12, A10)
 
-### Known bypass
+### Known bypasses
 
-**RTA02** (`rta/schedule-curl-exfil`) — expected SAFE. Confirms a known gap: curl POST body on a continuation line evades all `credential_harvest` patterns. Fix requires multiline-aware curl body pattern matching. Regression passes when analyser returns SAFE; fails if a fix mistakenly breaks it.
+None active. RTA02 (`rta/schedule-curl-exfil`) was a known bypass until v1.2.0 — fixed by applying `_normalize_yaml_content()` to the `credential_harvest` loop. Expected verdict is now DESTRUCTIVE.
 
 ---
 
