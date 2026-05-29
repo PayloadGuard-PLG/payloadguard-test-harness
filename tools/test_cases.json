@@ -318,13 +318,12 @@
     "category": "red-team",
     "layer": "L2c",
     "temporal_group": "stable",
-    "expected_verdict": "SAFE",
-    "expected_exit_code": 0,
-    "signal_type": "none",
-    "signal_severity": "NONE",
-    "bypass": true,
-    "bypass_notes": "RTA-05 partial: schedule trigger + curl POST body containing secrets.GITHUB_TOKEN with URL on next line. None of the credential_harvest patterns match: curl and secret are on different lines ([^\\n]* stops at backslash-continuation newline); -d body not covered by -H/--header fix. Known gap — fix requires multiline-aware curl body pattern.",
-    "description": "RTA-05 bypass: schedule cron + curl exfiltrating GITHUB_TOKEN via POST body (-d). URL on continuation line evades all current credential_harvest regexes. Expected SAFE until gap is closed."
+    "expected_verdict": "DESTRUCTIVE",
+    "expected_exit_code": 2,
+    "signal_type": "credential_harvest",
+    "signal_severity": "CRITICAL",
+    "bypass": false,
+    "description": "Schedule cron + curl exfiltrating GITHUB_TOKEN via POST with backslash-continuation lines. Fixed in v1.2.0: _normalize_yaml_content() now applied to credential_harvest loop; continuation lines collapse to spaces before matching."
   },
   "rta/prt-untrusted-checkout": {
     "id": "RTA03",
