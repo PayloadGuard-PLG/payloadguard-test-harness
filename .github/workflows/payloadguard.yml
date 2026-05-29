@@ -19,7 +19,7 @@ jobs:
       - name: PayloadGuard Scan
         id: payloadguard
         continue-on-error: true
-        uses: payloadguard-plg/payload-consequence-analyser@76139e95e1c4a3c3afdcd1db5aa7c807babe9964  # main — v1.3.0 PLI L4b
+        uses: payloadguard-plg/payload-consequence-analyser@ab31329e03a6fcb1490b3d1cd2a1545820f28c1d  # main — v1.3.0 PLI L4b (anthropic enabled)
         env:
           PLI_API_KEY: ${{ secrets.PLI_API_KEY }}
         with:
