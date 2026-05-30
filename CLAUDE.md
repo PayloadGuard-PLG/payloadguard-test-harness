@@ -3,11 +3,10 @@
 ## Handover (update this block at the end of every session)
 
 - **Branch for next work:** create a new branch from main
-- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. Docs in sync.
-- **PLI enabled (2026-05-29):** `payloadguard.yml` now pins analyser at `76139e9` (v1.3.0) with `pli-analysis: true` and `PLI_API_KEY` secret. All PR scans now run PLI Layer L4b full mode. Merged via PR #62.
-- **Next action:** Run PLI comparison regression — `python tools/run_regression.py --token "$GITHUB_TOKEN" --mode stable --ingest`. Check `payloadguard-report.json` artifacts for `"pli"` key: `mode`, `consistency_score`, `findings`. Cases where verdict shifts vs v1.2.0 baseline measure PLI detection improvement. Semantic category cases are the primary signal.
-- **Secrets required:** `PLI_API_KEY` (Anthropic API key) must be set in this repo's secrets for full L2/LLM mode.
-- **Regression trigger:** `regression.yml` now accepts `repository_dispatch` (type: `analyser-updated`) fired by the analyser on push to main. Runs `stable` mode (34 cases, strict). Daily schedule at 02:00 UTC runs `full` mode for drift observation. Requires `REGRESSION_PAT` secret in both repos.
+- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. PLI L4b evaluated and reverted (2026-05-29). Regression result: 30/34 stable pass. `payloadguard.yml` now pins analyser at reverted SHA (PLI removed from scoring path); `pli-analysis` input and `PLI_API_KEY` removed from workflow.
+- **PLI evaluation summary (2026-05-29):** 34-case stable regression with PLI full L2/LLM mode active. True positives: A03 (adversarial/slow-deletion) SAFE→DESTRUCTIVE, A06 (adversarial/threshold-gaming) SAFE→DESTRUCTIVE. False positives: WS07 (safe-clean-workflow) SAFE→DESTRUCTIVE, RT02 (postinstall-curl) SAFE→DESTRUCTIVE, RTA03 (prt-untrusted-checkout) CAUTION→DESTRUCTIVE. Root cause: PLI L2 LLM treats diff summaries as blank AI responses. PLI reverted. Net score unchanged at 30/34 pass.
+- **Known regression:** WS03 (workflow-security/dormant-trigger) — expected DESTRUCTIVE, consistently CAUTION (score=3). Needs investigation.
+- **Regression trigger:** `regression.yml` accepts `repository_dispatch` (type: `analyser-updated`) from analyser on push to main. Daily schedule at 02:00 UTC runs `full` mode. Requires `REGRESSION_PAT` secret in both repos.
 
 ---
 

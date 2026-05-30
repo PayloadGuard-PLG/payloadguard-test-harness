@@ -19,16 +19,13 @@ jobs:
       - name: PayloadGuard Scan
         id: payloadguard
         continue-on-error: true
-        uses: payloadguard-plg/payload-consequence-analyser@ab31329e03a6fcb1490b3d1cd2a1545820f28c1d  # main — v1.3.0 PLI L4b (anthropic enabled)
-        env:
-          PLI_API_KEY: ${{ secrets.PLI_API_KEY }}
+        uses: payloadguard-plg/payload-consequence-analyser@257039a6acee0681597506821e2c7c4fcdd0702f  # main — v1.3.0 reverted (PLI removed)
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           pr-description: ${{ github.event.pull_request.body }}
           app-id: ${{ secrets.PAYLOADGUARD_APP_ID }}
           private-key: ${{ secrets.PAYLOADGUARD_PRIVATE_KEY }}
           installation-id: ${{ secrets.PAYLOADGUARD_INSTALLATION_ID }}
-          pli-analysis: 'true'
 
       - name: Upload JSON report
         if: always()
