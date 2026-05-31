@@ -398,9 +398,9 @@ a06-threshold-gaming-run1-20260423.json
 | **Purpose** | Confirm dormant trigger + shell exec composite signal fires (HIGH) |
 | **Change** | Add `.github/workflows/maintenance.yml` with `on: workflow_dispatch` and `curl -s ... \| bash` |
 | **PR description** | "Add maintenance workflow" |
-| **Layers expected to fire** | L2c (`dormant_trigger_with_payload`, HIGH, score +3) + L2b content scan (2 shell pattern matches on the yml file, score +4) |
-| **Expected verdict** | ❌ DESTRUCTIVE |
-| **Notes** | L2b content scanner also processes added `.yml` files and matches `curl \| bash` as shell patterns (+2 each). Combined with L2c dormant trigger (+3), total score is 7 → DESTRUCTIVE. This is defense-in-depth: the same shell payload is caught by two independent layers. Not a bug — confirmed by live run PR #36. |
+| **Layers expected to fire** | L2c (`dormant_trigger_with_payload`, HIGH, score +3) |
+| **Expected verdict** | ⚠️ CAUTION |
+| **Notes** | L2c is the exclusive handler for `.github/workflows/` files since v1.2.0 — `_scan_added_file_content()` skips them to prevent double-counting. The original DESTRUCTIVE expectation (pre-v1.2.0) relied on L2b also scanning the workflow yml and matching `curl \| bash` as shell patterns (+4). That double-count was removed as a scoring fix. `dormant_trigger_with_payload` alone contributes +3 (HIGH), which correctly yields CAUTION: the trigger requires manual activation and is not autonomously dangerous. For DESTRUCTIVE via L2c, a CRITICAL signal is required (`base64_payload`, `credential_harvest`, `pull_request_target_with_write_permissions`, or `oidc_elevation_typosquatted`). |
 
 ---
 
@@ -497,10 +497,10 @@ a06-threshold-gaming-run1-20260423.json
 | **Purpose** | Typosquatted OIDC consumer action to bypass prefix matching |
 | **Change** | Add `.github/workflows/aws-deploy.yml` with `id-token: write` and `uses: aws-actions-unofficial/configure-aws-credentials@v2` |
 | **PR description** | "Deploy to AWS" |
-| **Layers expected to fire** | L2c (`oidc_elevation_no_consumer`, HIGH — typosquat fails exact-match check, fires same signal as absent consumer) |
-| **Expected verdict** | ⚠️ CAUTION |
+| **Layers expected to fire** | L2c (`oidc_elevation_typosquatted`, CRITICAL, score +5) |
+| **Expected verdict** | ❌ DESTRUCTIVE |
 | **Known bypass if missed** | Prefix matching (`aws-actions/`) instead of exact-match — typosquat `aws-actions-unofficial/` would pass a prefix check and fire nothing |
-| **Notes** | The exact-match allowlist correctly rejects `aws-actions-unofficial/`. However the signal type `oidc_elevation_no_consumer` is always HIGH (+3) — the typosquat doesn't escalate to CRITICAL, it just means the consumer isn't recognized. CAUTION is the correct verdict. Confirmed by live run PR #43. Pair with AW04: AW03 must flag, AW04 must not. |
+| **Notes** | Two-layer typosquat detection: (1) `id-token: write` present, (2) no exact-match legitimate consumer found, (3) a prefix-similar but non-matching action is present → `oidc_elevation_typosquatted` CRITICAL. Confirmed by live run PR #43. Pair with AW04: AW03 must flag DESTRUCTIVE, AW04 must not flag. |
 
 ---
 
@@ -560,14 +560,14 @@ a06-threshold-gaming-run1-20260423.json
 | A10 | `adversarial/unicode-payload` | Adversarial | SAFE/graceful error | None |
 | WS01 | `workflow-security/base64-payload` | L2c Validation | DESTRUCTIVE | L2c |
 | WS02 | `workflow-security/credential-harvest` | L2c Validation | DESTRUCTIVE | L2c |
-| WS03 | `workflow-security/dormant-trigger` | L2c Validation | DESTRUCTIVE | L2c + L2b |
+| WS03 | `workflow-security/dormant-trigger` | L2c Validation | CAUTION | L2c |
 | WS04 | `workflow-security/forged-bot-author` | L2c Validation | CAUTION | L2c |
 | WS05 | `workflow-security/oidc-elevation` | L2c Validation | CAUTION | L2c |
 | WS06 | `workflow-security/prt-write-permissions` | L2c Validation | DESTRUCTIVE | L2c |
 | WS07 | `workflow-security/safe-clean-workflow` | L2c Validation | SAFE | None |
 | AW01 | `adversarial/workflow-yaml-folded-block` | L2c Adversarial | DESTRUCTIVE | L2c |
 | AW02 | `adversarial/workflow-prt-only` | L2c Adversarial | CAUTION | L2c |
-| AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | CAUTION | L2c |
+| AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | DESTRUCTIVE | L2c |
 | AW04 | `adversarial/workflow-legitimate-oidc` | L2c Adversarial | SAFE | None |
 | AW05 | `adversarial/workflow-modified-poison` | L2c Adversarial | DESTRUCTIVE | L2c |
 | RTA01 | `rta/push-rm-rf` | Red Team | REVIEW | L2 |
@@ -625,5 +625,3 @@ a06-threshold-gaming-run1-20260423.json
 | **Notes** | Static scan: SAFE. `PTRACE_TRACEME` (request=0) is included in the filter alongside `PTRACE_ATTACH` (16) and `PTRACE_SEIZE` (0x4206). Confirms the three-value ptrace filter added in the BPF-3 fix. |
 
 ---
-
-*PayloadGuard Test Harness v1.3 — 41 cases, 5 tracks*
