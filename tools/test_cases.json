@@ -170,11 +170,11 @@
     "category": "workflow-security",
     "layer": "L2c",
     "temporal_group": "stable",
-    "expected_verdict": "DESTRUCTIVE",
-    "expected_exit_code": 2,
+    "expected_verdict": "CAUTION",
+    "expected_exit_code": 0,
     "signal_type": "dormant_trigger_with_payload",
     "signal_severity": "HIGH",
-    "description": "Added workflow_dispatch trigger with shell exec payload — L2c HIGH (+3) plus L2b content scan also fires on curl|bash in the yml file (+4), total score 7 → DESTRUCTIVE. Defense-in-depth interaction, not a bug."
+    "description": "Added workflow_dispatch trigger with shell exec payload — L2c HIGH (+3), score 3 → CAUTION. L2b content scan correctly excludes .github/workflows/ files (L2c is the exclusive handler since v1.2.0); original DESTRUCTIVE expectation was based on pre-v1.2.0 double-counting."
   },
   "workflow-security/forged-bot-author": {
     "id": "WS04",

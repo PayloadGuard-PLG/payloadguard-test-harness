@@ -3,7 +3,8 @@
 ## Handover (update this block at the end of every session)
 
 - **Branch for next work:** create a new branch from main
-- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. Docs in sync.
+- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. WS03 verdict corrected: DESTRUCTIVE → CAUTION (root cause resolved — see below).
+- **WS03 resolved:** `workflow-security/dormant-trigger` was expected DESTRUCTIVE but consistently returned CAUTION (score=3). Root cause: original expectation assumed L2b content scan would double-count the workflow yml file (+4), but v1.2.0 fixed that by making L2c the exclusive workflow handler. `dormant_trigger_with_payload` HIGH alone = +3 → CAUTION. Correct: a manually-activated dormant trigger is not DESTRUCTIVE without a CRITICAL signal. test_cases.json, HARNESS.md, TEST_SPEC.md all updated.
 - **Regression trigger:** `regression.yml` now accepts `repository_dispatch` (type: `analyser-updated`) fired by the analyser on push to main. Runs `stable` mode (34 cases, strict). Daily schedule at 02:00 UTC runs `full` mode for drift observation. Requires `REGRESSION_PAT` secret in both repos.
 
 ---

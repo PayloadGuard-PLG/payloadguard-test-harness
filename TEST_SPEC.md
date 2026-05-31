@@ -398,9 +398,9 @@ a06-threshold-gaming-run1-20260423.json
 | **Purpose** | Confirm dormant trigger + shell exec composite signal fires (HIGH) |
 | **Change** | Add `.github/workflows/maintenance.yml` with `on: workflow_dispatch` and `curl -s ... \| bash` |
 | **PR description** | "Add maintenance workflow" |
-| **Layers expected to fire** | L2c (`dormant_trigger_with_payload`, HIGH, score +3) + L2b content scan (2 shell pattern matches on the yml file, score +4) |
-| **Expected verdict** | ❌ DESTRUCTIVE |
-| **Notes** | L2b content scanner also processes added `.yml` files and matches `curl \| bash` as shell patterns (+2 each). Combined with L2c dormant trigger (+3), total score is 7 → DESTRUCTIVE. This is defense-in-depth: the same shell payload is caught by two independent layers. Not a bug — confirmed by live run PR #36. |
+| **Layers expected to fire** | L2c (`dormant_trigger_with_payload`, HIGH, score +3) |
+| **Expected verdict** | ⚠️ CAUTION |
+| **Notes** | L2c is the exclusive handler for `.github/workflows/` files since v1.2.0 — `_scan_added_file_content()` skips them to prevent double-counting. The original DESTRUCTIVE expectation (pre-v1.2.0) relied on L2b also scanning the workflow yml and matching `curl \| bash` as shell patterns (+4). That double-count was removed as a scoring fix. `dormant_trigger_with_payload` alone contributes +3 (HIGH), which correctly yields CAUTION: the trigger requires manual activation and is not autonomously dangerous. For DESTRUCTIVE via L2c, a CRITICAL signal is required (`base64_payload`, `credential_harvest`, `pull_request_target_with_write_permissions`, or `oidc_elevation_typosquatted`). |
 
 ---
 
@@ -560,7 +560,7 @@ a06-threshold-gaming-run1-20260423.json
 | A10 | `adversarial/unicode-payload` | Adversarial | SAFE/graceful error | None |
 | WS01 | `workflow-security/base64-payload` | L2c Validation | DESTRUCTIVE | L2c |
 | WS02 | `workflow-security/credential-harvest` | L2c Validation | DESTRUCTIVE | L2c |
-| WS03 | `workflow-security/dormant-trigger` | L2c Validation | DESTRUCTIVE | L2c + L2b |
+| WS03 | `workflow-security/dormant-trigger` | L2c Validation | CAUTION | L2c |
 | WS04 | `workflow-security/forged-bot-author` | L2c Validation | CAUTION | L2c |
 | WS05 | `workflow-security/oidc-elevation` | L2c Validation | CAUTION | L2c |
 | WS06 | `workflow-security/prt-write-permissions` | L2c Validation | DESTRUCTIVE | L2c |
