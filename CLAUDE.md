@@ -3,10 +3,10 @@
 ## Handover (update this block at the end of every session)
 
 - **Branch for next work:** create a new branch from main
-- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. PLI L4b evaluated and reverted (2026-05-29). Regression result: 30/34 stable pass. `payloadguard.yml` now pins analyser at reverted SHA (PLI removed from scoring path); `pli-analysis` input and `PLI_API_KEY` removed from workflow.
+- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. PLI L4b evaluated and reverted (2026-05-29). Regression result: 30/34 stable pass. WS03 verdict corrected: DESTRUCTIVE → CAUTION (root cause resolved). `payloadguard.yml` pins analyser at `fe68338` (main v1.3.0).
 - **PLI evaluation summary (2026-05-29):** 34-case stable regression with PLI full L2/LLM mode active. True positives: A03 (adversarial/slow-deletion) SAFE→DESTRUCTIVE, A06 (adversarial/threshold-gaming) SAFE→DESTRUCTIVE. False positives: WS07 (safe-clean-workflow) SAFE→DESTRUCTIVE, RT02 (postinstall-curl) SAFE→DESTRUCTIVE, RTA03 (prt-untrusted-checkout) CAUTION→DESTRUCTIVE. Root cause: PLI L2 LLM treats diff summaries as blank AI responses. PLI reverted. Net score unchanged at 30/34 pass.
-- **Known regression:** WS03 (workflow-security/dormant-trigger) — expected DESTRUCTIVE, consistently CAUTION (score=3). Needs investigation.
-- **Regression trigger:** `regression.yml` accepts `repository_dispatch` (type: `analyser-updated`) from analyser on push to main. Daily schedule at 02:00 UTC runs `full` mode. Requires `REGRESSION_PAT` secret in both repos.
+- **WS03 resolved:** `workflow-security/dormant-trigger` was expected DESTRUCTIVE but consistently returned CAUTION (score=3). Root cause: original expectation assumed L2b content scan double-counted the workflow yml file (+4), but v1.2.0 made L2c the exclusive workflow handler. `dormant_trigger_with_payload` HIGH alone = +3 → CAUTION. test_cases.json, HARNESS.md, TEST_SPEC.md updated.
+- **Regression trigger:** `regression.yml` is `workflow_dispatch` only (schedule and `repository_dispatch` removed). Requires `REGRESSION_PAT` secret in both repos.
 
 ---
 

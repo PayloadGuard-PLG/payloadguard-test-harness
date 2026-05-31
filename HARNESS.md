@@ -53,7 +53,7 @@ The `temporal_group` column indicates how each case is treated by the regression
 | A10 | adversarial/unicode-payload | adversarial | aging | SAFE | Hostile Unicode in comments, +4/-1 — robustness test |
 | WS01 | workflow-security/base64-payload | workflow-security | stable | DESTRUCTIVE | base64_payload CRITICAL — L2c signal test |
 | WS02 | workflow-security/credential-harvest | workflow-security | stable | DESTRUCTIVE | credential_harvest CRITICAL — AWS metadata + env dump |
-| WS03 | workflow-security/dormant-trigger | workflow-security | stable | DESTRUCTIVE | dormant_trigger_with_payload HIGH + L2b content scan |
+| WS03 | workflow-security/dormant-trigger | workflow-security | stable | CAUTION | dormant_trigger_with_payload HIGH — L2c signal test |
 | WS04 | workflow-security/forged-bot-author | workflow-security | stable | CAUTION | forged_bot_author HIGH — git config bot identity |
 | WS05 | workflow-security/oidc-elevation | workflow-security | stable | CAUTION | oidc_elevation_no_consumer HIGH — no OIDC consumer |
 | WS06 | workflow-security/prt-write-permissions | workflow-security | stable | DESTRUCTIVE | pull_request_target + write permissions CRITICAL |
