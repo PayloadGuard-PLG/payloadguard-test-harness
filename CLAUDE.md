@@ -2,8 +2,8 @@
 
 ## Handover (update this block at the end of every session)
 
-- **Branch for next work:** `claude/oidc-typosquat-detection-UBCOJ` (both repos)
-- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. `payloadguard.yml` pins analyser at `fe68338` (main v1.3.0). WS03 corrected DESTRUCTIVE→CAUTION (PR #71, merged 2026-05-31). A03+A06 corrected DESTRUCTIVE→SAFE (PR #72, 2026-06-01).
+- **Branch for next work:** create a new branch from main (both repos)
+- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. `payloadguard.yml` pins analyser at `fe68338` (main v1.3.0). WS03 corrected DESTRUCTIVE→CAUTION (PR #71, merged 2026-05-31). A03+A06 corrected DESTRUCTIVE→SAFE (PR #72, merged 2026-06-01).
 
 - **A03/A06 resolved (2026-06-01):** The "SHA regression" framing from the prior session was incorrect. analyze.py is functionally identical between `5dd6a072` and `fe68338` — only cleanup changes separate them (unused import, dead hasattr guard, _iter_workflow_file_diffs helper), none affecting scoring. A03 and A06 are documented bypass cases where SAFE is the correct result. A03's cross-file structural ratio is ~8%, below the 20% threshold. A06 has all metrics sub-threshold with no compound detection rule. Both were temporarily returning DESTRUCTIVE only while PLI was active (2026-05-29); after PLI was reverted the expectations were not corrected. Fixed: test_cases.json, HARNESS.md updated DESTRUCTIVE→SAFE. TEST_SPEC.md was already correct.
 
