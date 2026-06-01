@@ -3,20 +3,24 @@
 ## Handover (update this block at the end of every session)
 
 - **Branch for next work:** create a new branch from main (both repos)
-- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. `payloadguard.yml` pins analyser at `fe68338` (main v1.3.0). WS03 corrected DESTRUCTIVE→CAUTION (PR #71, merged 2026-05-31). A03+A06 corrected DESTRUCTIVE→SAFE (PR #72, merged 2026-06-01).
+- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. `payloadguard.yml` pins analyser at `fe68338` (main v1.3.0). WS03 corrected DESTRUCTIVE→CAUTION (PR #71). A03+A06 corrected DESTRUCTIVE→SAFE (PR #72). **Regression: 34/34 PASS.**
 
-- **A03/A06 resolved (2026-06-01):** The "SHA regression" framing from the prior session was incorrect. analyze.py is functionally identical between `5dd6a072` and `fe68338` — only cleanup changes separate them (unused import, dead hasattr guard, _iter_workflow_file_diffs helper), none affecting scoring. A03 and A06 are documented bypass cases where SAFE is the correct result. A03's cross-file structural ratio is ~8%, below the 20% threshold. A06 has all metrics sub-threshold with no compound detection rule. Both were temporarily returning DESTRUCTIVE only while PLI was active (2026-05-29); after PLI was reverted the expectations were not corrected. Fixed: test_cases.json, HARNESS.md updated DESTRUCTIVE→SAFE. TEST_SPEC.md was already correct.
-
-- **Regression verification — 2026-05-31 14:12 UTC (analyser SHA fe68338):**
-  - PASS (30 confirmed after expectation fix): T03 (#8), T04 (#9), T05 (#10), T09 (#11), T10 (#12), T11 (#13), A01 (#14), A02 (#15), **A03 (#16)**, A04 (#17), A05 (#18), **A06 (#19)**, WS01 (#34), WS02 (#35), WS03 (#36), WS04 (#37), WS05 (#38), WS06 (#39), WS07 (#40), AW01 (#41), AW02 (#42), AW03 (#43), AW04 (#44), AW05 (#45), RTA01 (#49), RTA02 (#50), RTA05 (#53), RT03 (#66)
+- **Regression verification — 2026-05-31 14:12 UTC (analyser SHA fe68338) — COMPLETE 34/34:**
+  - PASS (34/34): T03 (#8), T04 (#9), T05 (#10), T09 (#11), T10 (#12), T11 (#13), A01 (#14), A02 (#15), A03 (#16), A04 (#17), A05 (#18), A06 (#19), **A07 (#20)**, **A09 (#21)**, WS01 (#34), WS02 (#35), WS03 (#36), WS04 (#37), WS05 (#38), WS06 (#39), WS07 (#40), AW01 (#41), AW02 (#42), AW03 (#43), AW04 (#44), AW05 (#45), RTA01 (#49), RTA02 (#50), **RTA03 (#51)**, **RTA04 (#52)**, RTA05 (#53), **RT02 (#64)**, **RT01 (#65)**, RT03 (#66)
   - FAIL: none
-  - UNVERIFIED (6 — MCP token expired mid-run): A07 PR #20, A09 PR #21, RTA03 PR #51, RTA04 PR #52, RT02 PR #64, RT01 PR #65. Re-verify on next regression run.
+  - Previously unverified cases (A07, A09, RTA03, RTA04, RT02, RT01) confirmed via MCP check_runs 2026-06-01.
 
 - **PR map (stable cases):** PR #8=T03, #9=T04, #10=T05, #11=T09, #12=T10, #13=T11, #14=A01, #15=A02, #16=A03, #17=A04, #18=A05, #19=A06, #20=A07, #21=A09, #34=WS01, #35=WS02, #36=WS03, #37=WS04, #38=WS05, #39=WS06, #40=WS07, #41=AW01, #42=AW02, #43=AW03, #44=AW04, #45=AW05, #49=RTA01, #50=RTA02, #51=RTA03, #52=RTA04, #53=RTA05, #64=RT02, #65=RT01, #66=RT03
+
+- **A03/A06 resolved (2026-06-01):** The "SHA regression" framing from the prior session was incorrect. analyze.py is functionally identical between `5dd6a072` and `fe68338` — only cleanup changes separate them, none affecting scoring. A03 and A06 are documented bypass cases where SAFE is the correct result. Fixed: test_cases.json, HARNESS.md updated DESTRUCTIVE→SAFE. TEST_SPEC.md was already correct.
 
 - **PLI evaluation summary (2026-05-29):** 34-case stable regression with PLI full L2/LLM mode active. True positives: A03 SAFE→DESTRUCTIVE, A06 SAFE→DESTRUCTIVE. False positives: WS07 SAFE→DESTRUCTIVE, RT02 SAFE→DESTRUCTIVE, RTA03 CAUTION→DESTRUCTIVE. Root cause: PLI L2 LLM treats diff summaries as blank AI responses. PLI reverted. Net score unchanged at 30/34 pass.
 
 - **Regression trigger:** `regression.yml` is `workflow_dispatch` only (schedule and `repository_dispatch` removed). Requires `REGRESSION_PAT` secret in both repos.
+
+- **Branch deletion — safe to proceed** (regression now verified clean at 34/34).
+  - Analyser remote (GitHub UI — git push --delete blocked by local proxy): `claude/general-conversation-ANx2E`, `docs/post-merge-handover`, `docs/professional-readme`, `docs/session-end-may25`, `docs/session-handover-may25`, `fix/l2-l2c-double-scoring`. ⚠️ `fix/json-serialization-raw-tokens` — delete WITHOUT merging (7,598 line deletions, guts verification suite, test suite, eBPF agent, orchestrator).
+  - Harness remote (GitHub UI): `ci/cross-repo-regression-trigger`, `claude/general-conversation-ANx2E`, `docs/harness-docs-update`, `docs/sync-after-typosquat-fix`, `feat/pli-regression-testing`
 
 ---
 
