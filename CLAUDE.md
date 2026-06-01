@@ -22,7 +22,7 @@
   - Devin PRs closed (2026-06-01): analyser #75, #76, #77, #78; harness #67, #68, #69.
   - Analyser — delete via GitHub UI (15 branches): `claude/general-conversation-ANx2E`, `ci/cross-repo-regression-trigger`, `docs/cleanup-stale-planning-docs`, `docs/post-merge-handover`, `docs/professional-readme`, `docs/regression-verified-34-34`, `docs/session-end-may25`, `docs/session-handover-may25`, `fix/json-serialization-raw-tokens` (safe — only 2 lines unique vs main), `fix/l2-l2c-double-scoring`, `fix/readme-layer-count`, `devin/1780155535-disclosure-strategy`, `devin/1780155866-controlled-disclosure-strategy`, `devin/1780158266-layer-restructuring-plan`, `docs/disclosure-strategy-and-briefs`
   - Harness — delete via GitHub UI (8 branches): `ci/cross-repo-regression-trigger`, `claude/general-conversation-ANx2E`, `docs/harness-docs-update`, `docs/public-brief`, `feat/pli-regression-testing`, `fix/harness-regression-prep`, `devin/1780155683-disclosure-strategy`, `devin/1780156042-public-brief`
-  - ⚠️ `DarkVader-PLG-vericode` (analyser) — pending user decision. Removes verification suite, Dafny proofs, DEVLOG, HARNESS_BLUEPRINT, orchestrator.py. DO NOT DELETE without confirmation.
+  - `DarkVader-PLG-vericode` (analyser) — intentional R&D branch for verification exploration. Keep.
 
 ---
 
