@@ -534,50 +534,53 @@ a06-threshold-gaming-run1-20260423.json
 
 ## Summary Table
 
-| ID | Branch | Track | Expected Verdict | Layers |
-|---|---|---|---|---|
-| T01 | `safe/small-additive` | Validation | SAFE | None |
-| T02 | `safe/docs-only` | Validation | SAFE | None |
-| T03 | `destructive/mass-deletion` | Validation | DESTRUCTIVE | L1 L2 L3 L4 |
-| T04 | `destructive/april-2026-replica` | Validation | DESTRUCTIVE | L1 L2 L3 L4 L5a L5b |
-| T05 | `boundary/structural-threshold` | Validation | CAUTION/REVIEW | L4 |
-| T06 | `boundary/temporal-warning` | Validation | REVIEW | L5a |
-| T07 | `boundary/temporal-critical` | Validation | CAUTION | L5a |
-| T08 | `mixed/stale-branch-tiny-change` | Validation | REVIEW | L5a |
-| T09 | `semantic/no-description` | Validation | DESTRUCTIVE | L1 L2 L3 L4 L5b(UNVERIFIED) |
-| T10 | `semantic/honest-critical` | Validation | DESTRUCTIVE | L1 L2 L3 L4 |
-| T11 | `multilang/structural-js-ts-go` | Validation | CAUTION/DESTRUCTIVE | L4 |
-| T12 | `safe/large-rename` | Validation | SAFE | None |
-| A01 | `adversarial/keyword-evasion` | Adversarial | DESTRUCTIVE | L1 L2 L3 L4 |
-| A02 | `adversarial/rename-smuggling` | Adversarial | REVIEW/CAUTION | L1 |
-| A03 | `adversarial/slow-deletion` | Adversarial | SAFE/REVIEW | None/L4 |
-| A04 | `adversarial/addition-camouflage` | Adversarial | CAUTION/DESTRUCTIVE | L1 L2 L3 |
-| A05 | `adversarial/nested-gutting` | Adversarial | CAUTION/DESTRUCTIVE | L4 |
-| A06 | `adversarial/threshold-gaming` | Adversarial | SAFE | None |
-| A07 | `adversarial/new-file-replacement` | Adversarial | CAUTION/DESTRUCTIVE | L1 L2 L3 |
-| A08 | `adversarial/empty-diff` | Adversarial | SAFE | None |
-| A09 | `adversarial/config-only-deletion` | Adversarial | REVIEW/CAUTION | L2 |
-| A10 | `adversarial/unicode-payload` | Adversarial | SAFE/graceful error | None |
-| WS01 | `workflow-security/base64-payload` | L2c Validation | DESTRUCTIVE | L2c |
-| WS02 | `workflow-security/credential-harvest` | L2c Validation | DESTRUCTIVE | L2c |
-| WS03 | `workflow-security/dormant-trigger` | L2c Validation | CAUTION | L2c |
-| WS04 | `workflow-security/forged-bot-author` | L2c Validation | CAUTION | L2c |
-| WS05 | `workflow-security/oidc-elevation` | L2c Validation | CAUTION | L2c |
-| WS06 | `workflow-security/prt-write-permissions` | L2c Validation | DESTRUCTIVE | L2c |
-| WS07 | `workflow-security/safe-clean-workflow` | L2c Validation | SAFE | None |
-| AW01 | `adversarial/workflow-yaml-folded-block` | L2c Adversarial | DESTRUCTIVE | L2c |
-| AW02 | `adversarial/workflow-prt-only` | L2c Adversarial | CAUTION | L2c |
-| AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | DESTRUCTIVE | L2c |
-| AW04 | `adversarial/workflow-legitimate-oidc` | L2c Adversarial | SAFE | None |
-| AW05 | `adversarial/workflow-modified-poison` | L2c Adversarial | DESTRUCTIVE | L2c |
-| RTA01 | `rta/push-rm-rf` | Red Team | REVIEW | L2 |
-| RTA02 | `rta/schedule-curl-exfil` | Red Team | SAFE (known bypass) | None |
-| RTA03 | `rta/prt-untrusted-checkout` | Red Team | CAUTION | L2c |
-| RTA04 | `rta/github-env-injection` | Red Team | CAUTION | L2c |
-| RTA05 | `rta/variable-obfuscated-b64` | Red Team | DESTRUCTIVE | L2c |
-| RT01 | `runtime/procmem-read` | Runtime | SAFE | L5c (advisory) |
-| RT02 | `runtime/postinstall-curl` | Runtime | SAFE | L5c (advisory) |
-| RT03 | `runtime/ptrace-self` | Runtime | SAFE | L5c (advisory) |
+| ID | Branch | Track | Legacy Expected | Consequence Engine (`enforce`) | Layers / Detectors |
+|---|---|---|---|---|---|
+| T01 | `safe/small-additive` | Validation | SAFE | SAFE | None (`D01` base syntax note only) |
+| T02 | `safe/docs-only` | Validation | SAFE | SAFE | None |
+| T03 | `destructive/mass-deletion` | Validation | DESTRUCTIVE | DESTRUCTIVE | L1 L2 L3 L4 · `D03` `D04` |
+| T04 | `destructive/april-2026-replica` | Validation | DESTRUCTIVE | DESTRUCTIVE | L1 L2 L3 L4 L5a L5b · `D02` `D03` `D04` |
+| T05 | `boundary/structural-threshold` | Validation | DESTRUCTIVE | DESTRUCTIVE | L4 · `D03` `D04` |
+| T06 | `boundary/temporal-warning` *(spec-only)* | Validation | REVIEW | — | L5a |
+| T07 | `boundary/temporal-critical` *(spec-only)* | Validation | CAUTION | — | L5a |
+| T08 | `mixed/stale-branch-tiny-change` *(spec-only)* | Validation | REVIEW | — | L5a |
+| T09 | `semantic/no-description` | Validation | DESTRUCTIVE | DESTRUCTIVE | L1 L2 L3 L4 L5b(UNVERIFIED) · `D03` `D04` |
+| T10 | `semantic/honest-critical` | Validation | DESTRUCTIVE | DESTRUCTIVE | L1 L2 L3 L4 · `D03` `D04` |
+| T11 | `multilang/structural-js-ts-go` | Validation | DESTRUCTIVE | DESTRUCTIVE | L4 · `D03` `D04` |
+| T12 | `safe/large-rename` | Validation | SAFE | SAFE | None (5-stage SCG matches all renames) |
+| A01 | `adversarial/keyword-evasion` | Adversarial | DESTRUCTIVE | DESTRUCTIVE | L1 L2 L3 L4 · `D03` `D04` |
+| A02 | `adversarial/rename-smuggling` | Adversarial | DESTRUCTIVE | DESTRUCTIVE | L1 L2 · `D02` `D03` `D04` |
+| A03 | `adversarial/slow-deletion` | Adversarial | SAFE *(legacy bypass)* | **DESTRUCTIVE** | `D03` `D04` `D06` |
+| A04 | `adversarial/addition-camouflage` | Adversarial | DESTRUCTIVE | DESTRUCTIVE | L1 L2 L3 · `D03` `D04` |
+| A05 | `adversarial/nested-gutting` | Adversarial | DESTRUCTIVE | DESTRUCTIVE | L4 · `D02` `D03` `D04` |
+| A06 | `adversarial/threshold-gaming` | Adversarial | SAFE *(legacy bypass)* | **DESTRUCTIVE** | `D03` `D04` |
+| A07 | `adversarial/new-file-replacement` | Adversarial | DESTRUCTIVE | DESTRUCTIVE | L1 L2 L3 · `D02` `D03` `D04` |
+| A08 | `adversarial/empty-diff` *(spec-only)* | Adversarial | SAFE | — | None |
+| A09 | `adversarial/config-only-deletion` | Adversarial | DESTRUCTIVE | DESTRUCTIVE | L2 |
+| A10 | `adversarial/unicode-payload` | Adversarial | SAFE | SAFE | None |
+| WS01 | `workflow-security/base64-payload` | L2c Validation | DESTRUCTIVE | DESTRUCTIVE | L2c |
+| WS02 | `workflow-security/credential-harvest` | L2c Validation | DESTRUCTIVE | DESTRUCTIVE | L2c |
+| WS03 | `workflow-security/dormant-trigger` | L2c Validation | CAUTION | CAUTION | L2c |
+| WS04 | `workflow-security/forged-bot-author` | L2c Validation | CAUTION | CAUTION | L2c |
+| WS05 | `workflow-security/oidc-elevation` | L2c Validation | CAUTION | CAUTION | L2c |
+| WS06 | `workflow-security/prt-write-permissions` | L2c Validation | DESTRUCTIVE | DESTRUCTIVE | L2c |
+| WS07 | `workflow-security/safe-clean-workflow` | L2c Validation | SAFE | SAFE | None |
+| AW01 | `adversarial/workflow-yaml-folded-block` | L2c Adversarial | DESTRUCTIVE | DESTRUCTIVE | L2c |
+| AW02 | `adversarial/workflow-prt-only` | L2c Adversarial | CAUTION | CAUTION | L2c |
+| AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | DESTRUCTIVE | DESTRUCTIVE | L2c |
+| AW04 | `adversarial/workflow-legitimate-oidc` | L2c Adversarial | SAFE | SAFE | None |
+| AW05 | `adversarial/workflow-modified-poison` | L2c Adversarial | DESTRUCTIVE | DESTRUCTIVE | L2c |
+| RTA01 | `rta/push-rm-rf` | Red Team | REVIEW | REVIEW | L2 |
+| RTA02 | `rta/schedule-curl-exfil` | Red Team | DESTRUCTIVE *(fixed v1.2.0)* | DESTRUCTIVE | L2c |
+| RTA03 | `rta/prt-untrusted-checkout` | Red Team | CAUTION | CAUTION | L2c |
+| RTA04 | `github-env-injection` (`rta/github-env-injection`) | Red Team | CAUTION | CAUTION | L2c |
+| RTA05 | `rta/variable-obfuscated-b64` | Red Team | DESTRUCTIVE | DESTRUCTIVE | L2c |
+| RT01 | `runtime/procmem-read` | Runtime | SAFE | SAFE | L5c (advisory) |
+| RT02 | `runtime/postinstall-curl` | Runtime | SAFE | SAFE | L5c (advisory) |
+| RT03 | `runtime/ptrace-self` | Runtime | SAFE | SAFE | L5c (advisory) |
+| T23 | `workflow-security/dependency-lock-tampering` *(pending)* | L2c / 2026 API | DESTRUCTIVE | DESTRUCTIVE | Pending GitHub 2026 API |
+| T24 | `workflow-security/policy-bypass` *(pending)* | L2c / 2026 API | DESTRUCTIVE | DESTRUCTIVE | Pending GitHub 2026 API |
+| T25 | `workflow-security/secret-exfiltration` *(pending)* | L2c / 2026 API | DESTRUCTIVE | DESTRUCTIVE | Pending GitHub 2026 API |
 
 ---
 

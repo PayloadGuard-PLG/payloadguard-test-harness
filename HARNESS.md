@@ -224,11 +224,21 @@ The harness handles this with two groups:
 
 ---
 
-## Known Limitations
+## Known Limitations & Consequence Engine (`consequence.v1`)
 
-**A03 (slow-deletion)** and **A06 (threshold-gaming)** are documented bypass cases. A03 distributes 1 deletion across 5 files; the cross-file aggregation ratio (~8%) falls below the 20% threshold. A06 tunes every metric to sit just below its individual threshold; the scoring model has no compound detection rule. Both return SAFE (score 0) by design. These limitations are documented in `WHITEPAPER.md §8.1` and `AUDIT_LOG.md`. The previous DESTRUCTIVE expectations were set during PLI evaluation (2026-05-29) when PLI elevated both to DESTRUCTIVE; after PLI was reverted the expectations were not corrected. Fixed 2026-06-01.
+**A03 (slow-deletion)** and **A06 (threshold-gaming)** are documented bypass cases in the legacy threshold-scoring model (`legacy_expected_verdict: SAFE`), but are **detected and blocked (`security_desired_outcome: DESTRUCTIVE`)** by the Semantic Change Graph Consequence Engine (`consequence_engine.py`, `consequence.v1` in `--consequence-mode enforce`):
+- **A03 (`adversarial/slow-deletion`)**: Legacy L4 sees <20% per-file node deletion and ~8% cross-file ratio (`SAFE`). The SCG Consequence Engine matches symbols across all 5 files, identifies 5 unmatched non-stub symbol deletions (`api.js::updateUser`, `auth.py::Auth.deactivate`, `database.py::Database._rollback`, `services.ts::NotificationService.sendAlert`, `utils.go::WriteError`), detects the removal of `self._rollback()` from `Database.transaction` (`D06_GUARD_REGRESSION`), and verifies the broken caller `auth.deactivate("alice")` at `test_auth.py:78` (`D04_PUBLIC_API_BREAK` + `D03_COMPOUND_LOSS` → `DESTRUCTIVE`).
+- **A06 (`adversarial/threshold-gaming`)**: Legacy L4 sees 3/17 deleted nodes (17.6% < 20%) and 13.7% line deletion ratio (`SAFE`). The SCG Consequence Engine isolates the 3 unmatched security-critical method deletions (`SessionManager.revoke_all`, `Auth.logout_all`, `Auth.deactivate`) from the 3 trivial 1-statement getter additions and docstring padding (`D03_COMPOUND_LOSS` / `THRESHOLD_GAMING_DELETION`), and proves 2 broken call sites in `test_auth.py` (`D04_PUBLIC_API_BREAK` → `DESTRUCTIVE`).
 
-**T23–T25** are reserved for GitHub 2026 APIs not yet available. Their branches do not exist. They will be created when the relevant APIs ship (dependency locking, policy controls, egress firewall hooks).
+### Schema v2 Oracle Validation (`tools/validate_manifest.py`)
+
+Each entry in `tools/test_cases.json` preserves all v1 keys (`id`, `category`, `temporal_group`, `expected_verdict`, `expected_exit_code`, `description`) for compatibility with `tools/ingest.py` and `tools/run_regression.py`, and includes Schema v2 oracle assertions (`schema_version: "2.0"`, `legacy_expected_verdict`, `security_desired_outcome`, `consequence_class`, `expected_findings`, `forbidden_findings`, `required_capabilities`). Validate locally via:
+
+```bash
+python tools/validate_manifest.py --verify-consequence /path/to/payload-consequence-analyser
+```
+
+**T23–T25** are reserved for GitHub 2026 APIs not yet available. Their branches do not exist (`status: "pending-2026-api"`). They will be created when the relevant APIs ship (dependency locking, policy controls, egress firewall hooks).
 
 ---
 
