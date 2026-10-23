@@ -3,7 +3,10 @@
 ## Handover (update this block at the end of every session)
 
 - **Branch for next work:** create a new branch from main (both repos)
-- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. `payloadguard.yml` pins analyser at `fe68338` (main v1.3.0). **Regression: 34/34 PASS.** Both repos fully cleaned — 15 stale branches deleted from analyser, 8 from harness (2026-06-01).
+- **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. `tools/test_cases.json` upgraded to Schema v2 (`2.0`) with `expected_consequence` oracle fields (`expected_detectors`, `forbidden_detectors`, `enforce_verdict`, `enforce_exit`, `min_reconciled_symbols`) and `tools/validate_manifest.py` (`--verify-consequence`). **Consequence Engine v1 (`consequence.v1` + `D01`–`D06` v2) oracle verification: 38/38 PASS (PR #74 `4e8e1df`, PR #75 `dcc5522`).**
+- **A03/A06 resolution in Consequence Engine (`consequence.v1`):**
+  - Legacy L3 (`shadow` mode): `A03` (`adversarial/slow-deletion`) and `A06` (`adversarial/threshold-gaming`) remain `SAFE (0)` for backward compatibility with existing L3 thresholds.
+  - Consequence Engine (`enforce` mode): Both `A03` and `A06` are deterministically caught by `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK`, and `D06_GUARD_REGRESSION` → `DESTRUCTIVE (2)` while `T12` (`safe/large-rename`) is reconciled via `D01_RENAME_MOVE` (`reconciled_symbols=12`) → `SAFE (0)`.
 
 - **Regression verification — 2026-06-01 (analyser SHA fe68338, v1.3.0) — COMPLETE 34/34:**
   - PASS (34/34): T03 (#8), T04 (#9), T05 (#10), T09 (#11), T10 (#12), T11 (#13), A01 (#14), A02 (#15), A03 (#16), A04 (#17), A05 (#18), A06 (#19), A07 (#20), A09 (#21), WS01 (#34), WS02 (#35), WS03 (#36), WS04 (#37), WS05 (#38), WS06 (#39), WS07 (#40), AW01 (#41), AW02 (#42), AW03 (#43), AW04 (#44), AW05 (#45), RTA01 (#49), RTA02 (#50), RTA03 (#51), RTA04 (#52), RTA05 (#53), RT02 (#64), RT01 (#65), RT03 (#66)
@@ -68,7 +71,8 @@ None active. RTA02 (`rta/schedule-curl-exfil`) was a known bypass until v1.2.0 �
 HARNESS.md           — full test case matrix (41 cases) + regression runner docs
 TEST_SPEC.md         — per-branch specifications: change, expected layers, verdict
 README.md            — brief overview and track summary
-tools/test_cases.json       — ground truth: all registered cases with IDs, categories, expected verdicts
+tools/test_cases.json       — ground truth (Schema v2 / 2.0): all registered cases with IDs, categories, expected verdicts, and expected_consequence oracles
+tools/validate_manifest.py  — validates Schema v1+v2 integrity, branch refs, and live Consequence Engine v1 oracles (--verify-consequence)
 tools/run_regression.py     — regression runner (modes: stable | temporal | full | runtime)
 tools/ingest.py             — ingests scan results into SQLite
 tools/dashboard.py          — Dash dashboard: regression matrix, history, threshold simulator
