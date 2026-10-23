@@ -5,7 +5,24 @@
     "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
-    "description": "Add health_check() method — zero-noise baseline. Any non-SAFE result is a bug."
+    "description": "Add health_check() method \u2014 zero-noise baseline. Any non-SAFE result is a bug.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "BENIGN_ADDITIVE",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic"
+    ]
   },
   "safe/docs-only": {
     "id": "T02",
@@ -13,7 +30,22 @@
     "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
-    "description": "README additions only, no code touched — confirms non-code changes don't false-positive."
+    "description": "README additions only, no code touched \u2014 confirms non-code changes don't false-positive.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "DOCS_ONLY",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "safe/large-rename": {
     "id": "T12",
@@ -21,7 +53,24 @@
     "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
-    "description": "Three class renames in auth.py — rename gap detector. False positive = L4 rename blind spot."
+    "description": "Three class renames in auth.py \u2014 rename gap detector. False positive = L4 rename blind spot.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "PURE_RENAME_REFACTOR",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic"
+    ]
   },
   "destructive/mass-deletion": {
     "id": "T03",
@@ -29,7 +78,27 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Delete auth.py and database.py — canonical destructive payload."
+    "description": "Delete auth.py and database.py \u2014 canonical destructive payload.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "MASS_CRITICAL_DELETION",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "destructive/april-2026-replica": {
     "id": "T04",
@@ -37,7 +106,27 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Replica of April 2026 incident: benign commit message, catastrophic diff."
+    "description": "Replica of April 2026 incident: benign commit message, catastrophic diff.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "BODY_GUTTED",
+    "expected_findings": [
+      {
+        "detector_id": "D02_BODY_WEAKENING"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "boundary/structural-threshold": {
     "id": "T05",
@@ -45,7 +134,27 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "4 methods removed from auth.py (~23.5% structural deletion, just above 20% threshold)."
+    "description": "4 methods removed from auth.py (~23.5% structural deletion, just above 20% threshold).",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "PUBLIC_API_REMOVAL",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "semantic/no-description": {
     "id": "T09",
@@ -53,7 +162,27 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "No PR description — L5b returns UNVERIFIED but diff deletes database.py (DESTRUCTIVE)."
+    "description": "No PR description \u2014 L5b returns UNVERIFIED but diff deletes database.py (DESTRUCTIVE).",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "UNRESOLVED_CALLER",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "semantic/honest-critical": {
     "id": "T10",
@@ -61,7 +190,27 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Honest BREAKING CHANGE description of auth removal — L5b TRANSPARENT, overall DESTRUCTIVE."
+    "description": "Honest BREAKING CHANGE description of auth removal \u2014 L5b TRANSPARENT, overall DESTRUCTIVE.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "UNRESOLVED_CALLER",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "multilang/structural-js-ts-go": {
     "id": "T11",
@@ -69,7 +218,28 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Structural deletions across JS, TS, and Go — parser stress test."
+    "description": "Structural deletions across JS, TS, and Go \u2014 parser stress test.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "DISTRIBUTED_SYMBOL_LOSS",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS",
+        "consequence_class": "DISTRIBUTED_SYMBOL_LOSS"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK",
+        "consequence_class": "PUBLIC_API_REMOVAL"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic"
+    ]
   },
   "adversarial/keyword-evasion": {
     "id": "A01",
@@ -77,7 +247,27 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Deceptive description without benign trigger words — tests non-keyword evasion."
+    "description": "Deceptive description without benign trigger words \u2014 tests non-keyword evasion.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "UNRESOLVED_CALLER",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "adversarial/rename-smuggling": {
     "id": "A02",
@@ -85,7 +275,29 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "auth.py renamed to identity.py with contents gutted — tests renamed-file blind spot."
+    "description": "auth.py renamed to identity.py with contents gutted \u2014 tests renamed-file blind spot.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "RENAME_WITH_BODY_WEAKENING",
+    "expected_findings": [
+      {
+        "detector_id": "D02_BODY_WEAKENING",
+        "consequence_class": "RENAME_WITH_BODY_WEAKENING"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK",
+        "consequence_class": "UNRESOLVED_CALLER"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "adversarial/slow-deletion": {
     "id": "A03",
@@ -93,7 +305,34 @@
     "temporal_group": "stable",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
-    "description": "1 function removed from each of 5 files — distributed deletion evasion. Known bypass: cross-file ratio (~8%) is below the 20% aggregation threshold. Documents the per-file accumulation gap."
+    "description": "1 function removed from each of 5 files \u2014 distributed deletion evasion. Known bypass: cross-file ratio (~8%) is below the 20% aggregation threshold. Documents the per-file accumulation gap.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "DISTRIBUTED_SYMBOL_LOSS",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS",
+        "consequence_class": "DISTRIBUTED_SYMBOL_LOSS"
+      },
+      {
+        "detector_id": "D06_GUARD_REGRESSION",
+        "consequence_class": "SECURITY_GUARD_REMOVED"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK",
+        "consequence_class": "UNRESOLVED_CALLER"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability",
+      "flow"
+    ]
   },
   "adversarial/addition-camouflage": {
     "id": "A04",
@@ -101,7 +340,27 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Large api.js addition + auth.py deletion — addition camouflage pattern."
+    "description": "Large api.js addition + auth.py deletion \u2014 addition camouflage pattern.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "UNRESOLVED_CALLER",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "adversarial/nested-gutting": {
     "id": "A05",
@@ -109,7 +368,29 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "class Auth shell preserved, all methods deleted — tests L4 method tracking."
+    "description": "class Auth shell preserved, all methods deleted \u2014 tests L4 method tracking.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "BODY_GUTTED",
+    "expected_findings": [
+      {
+        "detector_id": "D02_BODY_WEAKENING",
+        "consequence_class": "BODY_GUTTED"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK",
+        "consequence_class": "UNRESOLVED_CALLER"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "adversarial/threshold-gaming": {
     "id": "A06",
@@ -117,7 +398,29 @@
     "temporal_group": "stable",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
-    "description": "Every metric tuned just below threshold — known bypass. Documents that additive threshold scoring has no compound detection rule. Severity score 0 → SAFE. Mitigation path: composite scoring or ML-based thresholds."
+    "description": "Every metric tuned just below threshold \u2014 known bypass. Documents that additive threshold scoring has no compound detection rule. Severity score 0 \u2192 SAFE. Mitigation path: composite scoring or ML-based thresholds.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "THRESHOLD_GAMING_DELETION",
+    "expected_findings": [
+      {
+        "detector_id": "D03_COMPOUND_LOSS",
+        "consequence_class": "THRESHOLD_GAMING_DELETION"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK",
+        "consequence_class": "UNRESOLVED_CALLER"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "adversarial/new-file-replacement": {
     "id": "A07",
@@ -125,7 +428,29 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Delete auth.py, add auth_v2.py stub — delete+add replacement pattern."
+    "description": "Delete auth.py, add auth_v2.py stub \u2014 delete+add replacement pattern.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "RENAME_WITH_BODY_WEAKENING",
+    "expected_findings": [
+      {
+        "detector_id": "D02_BODY_WEAKENING",
+        "consequence_class": "RENAME_WITH_BODY_WEAKENING"
+      },
+      {
+        "detector_id": "D04_PUBLIC_API_BREAK",
+        "consequence_class": "UNRESOLVED_CALLER"
+      }
+    ],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax",
+      "symbolic",
+      "reachability"
+    ]
   },
   "adversarial/config-only-deletion": {
     "id": "A09",
@@ -133,7 +458,18 @@
     "temporal_group": "stable",
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
-    "description": "Config-only deletion (settings.yml, requirements.txt) — pure L2 signal test."
+    "description": "Config-only deletion (settings.yml, requirements.txt) \u2014 pure L2 signal test.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CONFIG_CRITICAL_DELETION",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal",
+      "syntax"
+    ]
   },
   "adversarial/unicode-payload": {
     "id": "A10",
@@ -141,7 +477,23 @@
     "temporal_group": "aging",
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
-    "description": "Hostile Unicode encoding in comments, minimal +4/-1 change — robustness/no-crash test."
+    "description": "Hostile Unicode encoding in comments, minimal +4/-1 change \u2014 robustness/no-crash test.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "ENCODING_ROBUSTNESS",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal",
+      "syntax"
+    ]
   },
   "workflow-security/base64-payload": {
     "id": "WS01",
@@ -152,7 +504,17 @@
     "expected_exit_code": 2,
     "signal_type": "base64_payload",
     "signal_severity": "CRITICAL",
-    "description": "Added workflow with base64-encoded payload piped to bash — L2c CRITICAL signal, score +5, immediate DESTRUCTIVE."
+    "description": "Added workflow with base64-encoded payload piped to bash \u2014 L2c CRITICAL signal, score +5, immediate DESTRUCTIVE.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/credential-harvest": {
     "id": "WS02",
@@ -163,7 +525,17 @@
     "expected_exit_code": 2,
     "signal_type": "credential_harvest",
     "signal_severity": "CRITICAL",
-    "description": "Added workflow curling AWS metadata endpoint and grepping env for secrets — L2c CRITICAL signal, score +5."
+    "description": "Added workflow curling AWS metadata endpoint and grepping env for secrets \u2014 L2c CRITICAL signal, score +5.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/dormant-trigger": {
     "id": "WS03",
@@ -174,7 +546,17 @@
     "expected_exit_code": 0,
     "signal_type": "dormant_trigger_with_payload",
     "signal_severity": "HIGH",
-    "description": "Added workflow_dispatch trigger with shell exec payload — L2c HIGH (+3), score 3 → CAUTION. L2b content scan correctly excludes .github/workflows/ files (L2c is the exclusive handler since v1.2.0); original DESTRUCTIVE expectation was based on pre-v1.2.0 double-counting."
+    "description": "Added workflow_dispatch trigger with shell exec payload \u2014 L2c HIGH (+3), score 3 \u2192 CAUTION. L2b content scan correctly excludes .github/workflows/ files (L2c is the exclusive handler since v1.2.0); original DESTRUCTIVE expectation was based on pre-v1.2.0 double-counting.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "CAUTION",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "CAUTION",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/forged-bot-author": {
     "id": "WS04",
@@ -185,7 +567,17 @@
     "expected_exit_code": 0,
     "signal_type": "forged_bot_author",
     "signal_severity": "HIGH",
-    "description": "Added workflow configuring git identity as github-actions[bot] — L2c HIGH signal, score +3, CAUTION."
+    "description": "Added workflow configuring git identity as github-actions[bot] \u2014 L2c HIGH signal, score +3, CAUTION.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "CAUTION",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "CAUTION",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/oidc-elevation": {
     "id": "WS05",
@@ -196,7 +588,17 @@
     "expected_exit_code": 0,
     "signal_type": "oidc_elevation_no_consumer",
     "signal_severity": "HIGH",
-    "description": "Added workflow with id-token: write and no legitimate OIDC consumer — L2c HIGH signal, score +3, CAUTION."
+    "description": "Added workflow with id-token: write and no legitimate OIDC consumer \u2014 L2c HIGH signal, score +3, CAUTION.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "CAUTION",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "CAUTION",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/prt-write-permissions": {
     "id": "WS06",
@@ -207,7 +609,17 @@
     "expected_exit_code": 2,
     "signal_type": "pull_request_target_with_write_permissions",
     "signal_severity": "CRITICAL",
-    "description": "Added pull_request_target workflow with contents: write + pull-requests: write — L2c CRITICAL escalation, score +5."
+    "description": "Added pull_request_target workflow with contents: write + pull-requests: write \u2014 L2c CRITICAL escalation, score +5.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/safe-clean-workflow": {
     "id": "WS07",
@@ -218,7 +630,22 @@
     "expected_exit_code": 0,
     "signal_type": "none",
     "signal_severity": "NONE",
-    "description": "Added clean standard CI workflow — L2c baseline, no signals fire. Any non-SAFE result is a false positive bug."
+    "description": "Added clean standard CI workflow \u2014 L2c baseline, no signals fire. Any non-SAFE result is a false positive bug.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "CLEAN_WORKFLOW",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "adversarial/workflow-yaml-folded-block": {
     "id": "AW01",
@@ -229,7 +656,17 @@
     "expected_exit_code": 2,
     "signal_type": "base64_payload",
     "signal_severity": "CRITICAL",
-    "description": "Base64 payload split across YAML folded block lines — tests _normalize_yaml_content() bypass prevention."
+    "description": "Base64 payload split across YAML folded block lines \u2014 tests _normalize_yaml_content() bypass prevention.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "adversarial/workflow-prt-only": {
     "id": "AW02",
@@ -240,7 +677,17 @@
     "expected_exit_code": 0,
     "signal_type": "dangerous_trigger_pull_request_target",
     "signal_severity": "HIGH",
-    "description": "pull_request_target with read-only permissions — HIGH signal only (no write escalation to CRITICAL)."
+    "description": "pull_request_target with read-only permissions \u2014 HIGH signal only (no write escalation to CRITICAL).",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "CAUTION",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "CAUTION",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "adversarial/workflow-typosquatted-oidc": {
     "id": "AW03",
@@ -251,7 +698,17 @@
     "expected_exit_code": 2,
     "signal_type": "oidc_elevation_typosquatted",
     "signal_severity": "CRITICAL",
-    "description": "id-token: write with typosquatted consumer (aws-actions-unofficial/) — two-layer typosquat detection fires oidc_elevation_typosquatted (CRITICAL +5) → DESTRUCTIVE. Upgraded from CAUTION when typosquat detection was added as a distinct CRITICAL signal in v1.2.0."
+    "description": "id-token: write with typosquatted consumer (aws-actions-unofficial/) \u2014 two-layer typosquat detection fires oidc_elevation_typosquatted (CRITICAL +5) \u2192 DESTRUCTIVE. Upgraded from CAUTION when typosquat detection was added as a distinct CRITICAL signal in v1.2.0.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "adversarial/workflow-legitimate-oidc": {
     "id": "AW04",
@@ -262,7 +719,22 @@
     "expected_exit_code": 0,
     "signal_type": "none",
     "signal_severity": "NONE",
-    "description": "id-token: write with legitimate aws-actions/configure-aws-credentials consumer — must not flag. False positive = exact-match regression."
+    "description": "id-token: write with legitimate aws-actions/configure-aws-credentials consumer \u2014 must not flag. False positive = exact-match regression.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "CLEAN_WORKFLOW",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "adversarial/workflow-modified-poison": {
     "id": "AW05",
@@ -273,7 +745,17 @@
     "expected_exit_code": 2,
     "signal_type": "credential_harvest",
     "signal_severity": "CRITICAL",
-    "description": "Existing workflow modified (change_type=M) to inject credential harvesting — tests that M-type diffs are scanned, not just A-type."
+    "description": "Existing workflow modified (change_type=M) to inject credential harvesting \u2014 tests that M-type diffs are scanned, not just A-type.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/dependency-lock-tampering": {
     "id": "T23",
@@ -282,7 +764,17 @@
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "status": "pending-2026-api",
-    "description": "Modifies workflow dependency lock file — validates interop with GitHub 2026 immutable dependency locking. Blocked pending API availability."
+    "description": "Modifies workflow dependency lock file \u2014 validates interop with GitHub 2026 immutable dependency locking. Blocked pending API availability.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/policy-bypass": {
     "id": "T24",
@@ -291,7 +783,17 @@
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "status": "pending-2026-api",
-    "description": "Workflow redefines GITHUB_TOKEN scopes to escalate permissions — validates policy enforcement detection. Blocked pending API availability."
+    "description": "Workflow redefines GITHUB_TOKEN scopes to escalate permissions \u2014 validates policy enforcement detection. Blocked pending API availability.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "workflow-security/secret-exfiltration": {
     "id": "T25",
@@ -300,7 +802,17 @@
     "expected_verdict": "DESTRUCTIVE",
     "expected_exit_code": 2,
     "status": "pending-2026-api",
-    "description": "Adds curl command to exfiltrate $SECRETS — complements GitHub 2026 native egress firewall as upstream block. Blocked pending API availability."
+    "description": "Adds curl command to exfiltrate $SECRETS \u2014 complements GitHub 2026 native egress firewall as upstream block. Blocked pending API availability.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "rta/push-rm-rf": {
     "id": "RTA01",
@@ -311,7 +823,17 @@
     "expected_exit_code": 0,
     "signal_type": "content_shell_pattern",
     "signal_severity": "HIGH",
-    "description": "RTA-04: Added workflow containing rm -rf — caught by _scan_added_file_content (.yml not excluded), score +2 → REVIEW. Inline 'on: workflow_dispatch' avoids L2c dormant-trigger pattern (requires newline form)."
+    "description": "RTA-04: Added workflow containing rm -rf \u2014 caught by _scan_added_file_content (.yml not excluded), score +2 \u2192 REVIEW. Inline 'on: workflow_dispatch' avoids L2c dormant-trigger pattern (requires newline form).",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "REVIEW",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "REVIEW",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "rta/schedule-curl-exfil": {
     "id": "RTA02",
@@ -323,7 +845,17 @@
     "signal_type": "credential_harvest",
     "signal_severity": "CRITICAL",
     "bypass": false,
-    "description": "Schedule cron + curl exfiltrating GITHUB_TOKEN via POST with backslash-continuation lines. Fixed in v1.2.0: _normalize_yaml_content() now applied to credential_harvest loop; continuation lines collapse to spaces before matching."
+    "description": "Schedule cron + curl exfiltrating GITHUB_TOKEN via POST with backslash-continuation lines. Fixed in v1.2.0: _normalize_yaml_content() now applied to credential_harvest loop; continuation lines collapse to spaces before matching.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "rta/prt-untrusted-checkout": {
     "id": "RTA03",
@@ -334,7 +866,17 @@
     "expected_exit_code": 0,
     "signal_type": "dangerous_trigger_pull_request_target",
     "signal_severity": "HIGH",
-    "description": "RTA-06: pull_request_target trigger with untrusted checkout (ref: head.sha). No explicit write permissions declared → HIGH signal only (+3), CAUTION. Mirrors adversarial/workflow-prt-only but as a red-team branch."
+    "description": "RTA-06: pull_request_target trigger with untrusted checkout (ref: head.sha). No explicit write permissions declared \u2192 HIGH signal only (+3), CAUTION. Mirrors adversarial/workflow-prt-only but as a red-team branch.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "CAUTION",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "CAUTION",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "rta/github-env-injection": {
     "id": "RTA04",
@@ -345,7 +887,17 @@
     "expected_exit_code": 0,
     "signal_type": "github_env_injection",
     "signal_severity": "HIGH",
-    "description": "RTA-07 fixed: workflow injects PATH, LD_PRELOAD, and NODE_OPTIONS=--require into $GITHUB_ENV to poison all subsequent steps. Caught by _ACTIONS_GITHUB_ENV_INJECTION (Signal 7 added post-red-team), score +3 → CAUTION."
+    "description": "RTA-07 fixed: workflow injects PATH, LD_PRELOAD, and NODE_OPTIONS=--require into $GITHUB_ENV to poison all subsequent steps. Caught by _ACTIONS_GITHUB_ENV_INJECTION (Signal 7 added post-red-team), score +3 \u2192 CAUTION.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "CAUTION",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "CAUTION",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "rta/variable-obfuscated-b64": {
     "id": "RTA05",
@@ -356,7 +908,17 @@
     "expected_exit_code": 2,
     "signal_type": "base64_payload",
     "signal_severity": "CRITICAL",
-    "description": "RTA-08: Variable-indirected base64 payload — PAYLOAD=$(echo '...') then echo $PAYLOAD | base64 -d | bash. Obfuscation hides string but 'base64 -d | bash' literal still matches _ACTIONS_BASE64_PAYLOAD pattern 1, score +5 → DESTRUCTIVE."
+    "description": "RTA-08: Variable-indirected base64 payload \u2014 PAYLOAD=$(echo '...') then echo $PAYLOAD | base64 -d | bash. Obfuscation hides string but 'base64 -d | bash' literal still matches _ACTIONS_BASE64_PAYLOAD pattern 1, score +5 \u2192 DESTRUCTIVE.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "DESTRUCTIVE",
+    "legacy_expected_exit_code": 2,
+    "security_desired_outcome": "DESTRUCTIVE",
+    "consequence_class": "CI_WORKFLOW_POISONING",
+    "expected_findings": [],
+    "forbidden_findings": [],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "runtime/procmem-read": {
     "id": "RT01",
@@ -366,7 +928,22 @@
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
     "signal_type": "procmem_access",
-    "description": "RT01: Workflow opens /proc/self/mem (own PID only, safe). PLG static scan: SAFE — no destructive code changes. eBPF agent emits procmem_open event in audit mode (advisory, no score impact)."
+    "description": "RT01: Workflow opens /proc/self/mem (own PID only, safe). PLG static scan: SAFE \u2014 no destructive code changes. eBPF agent emits procmem_open event in audit mode (advisory, no score impact).",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "RUNTIME_TRACE_ADVISORY",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "runtime/postinstall-curl": {
     "id": "RT02",
@@ -376,7 +953,22 @@
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
     "signal_type": "egress_connect",
-    "description": "RT02: Workflow curls loopback 127.0.0.1:9999 (always allowed). PLG static scan: SAFE. eBPF agent emits egress_connect event; loopback is in the default allowlist."
+    "description": "RT02: Workflow curls loopback 127.0.0.1:9999 (always allowed). PLG static scan: SAFE. eBPF agent emits egress_connect event; loopback is in the default allowlist.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "RUNTIME_TRACE_ADVISORY",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal"
+    ]
   },
   "runtime/ptrace-self": {
     "id": "RT03",
@@ -386,6 +978,21 @@
     "expected_verdict": "SAFE",
     "expected_exit_code": 0,
     "signal_type": "ptrace_attempt",
-    "description": "RT03: Workflow calls PTRACE_TRACEME (self-attach only, no cross-process threat). PLG static scan: SAFE. eBPF agent emits ptrace_attach event in audit mode."
+    "description": "RT03: Workflow calls PTRACE_TRACEME (self-attach only, no cross-process threat). PLG static scan: SAFE. eBPF agent emits ptrace_attach event in audit mode.",
+    "schema_version": "2.0",
+    "legacy_expected_verdict": "SAFE",
+    "legacy_expected_exit_code": 0,
+    "security_desired_outcome": "SAFE",
+    "consequence_class": "RUNTIME_TRACE_ADVISORY",
+    "expected_findings": [],
+    "forbidden_findings": [
+      "D02_BODY_WEAKENING",
+      "D03_COMPOUND_LOSS",
+      "D04_PUBLIC_API_BREAK",
+      "D06_GUARD_REGRESSION"
+    ],
+    "required_capabilities": [
+      "universal"
+    ]
   }
 }
