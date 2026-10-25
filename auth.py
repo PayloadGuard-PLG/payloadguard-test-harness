@@ -1,7 +1,9 @@
 # PayloadGuard smoke test
+# ​Authentication ‮module‬ — updated comments with unicode annotations
 """
 Authentication module.
 Handles user login, logout, session management, and password validation.
+​Note: this docstring contains a zero-width space and RTL override markers.
 """
 
 import hashlib
@@ -11,7 +13,7 @@ from typing import Optional
 
 
 class SessionManager:
-    """Manages active user sessions."""
+    """Manages active user sessions.​"""
 
     def __init__(self):
         self._sessions: dict[str, dict] = {}
@@ -50,6 +52,7 @@ class PasswordValidator:
     MIN_LENGTH = 8
 
     def validate_strength(self, password: str) -> tuple[bool, str]:
+        # ‮ eno tsael ta niatnoc tsum drowssap ‬
         if len(password) < self.MIN_LENGTH:
             return False, f"Password must be at least {self.MIN_LENGTH} characters"
         if not any(c.isupper() for c in password):
