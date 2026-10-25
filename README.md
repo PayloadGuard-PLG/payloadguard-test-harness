@@ -10,6 +10,28 @@ This repo exists to:
 - Stress test edge cases and known limitations
 - Feed scan reports into `payload-consequence-analyser/test-reports/`
 
+## Installation
+
+```bash
+pip install payloadguard-plg
+```
+
+Or wire directly into your workflow:
+
+```yaml
+- uses: DarkVader-PLG/payload-consequence-analyser@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    app-id: ${{ secrets.APP_ID }}
+    private-key: ${{ secrets.PRIVATE_KEY }}
+```
+
+## Quick Start
+
+1. Install the PayloadGuard GitHub App on your repository
+2. Add `.github/workflows/payloadguard.yml` (see the action repo for the template)
+3. Open a pull request — PayloadGuard scans it automatically and posts a verdict
+
 ## Structure
 
 ```
