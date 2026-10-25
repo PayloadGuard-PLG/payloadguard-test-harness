@@ -372,6 +372,107 @@ def _build_mutations() -> List[Dict[str, Any]]:
         "apply": mut_ben_05,
     })
 
+    # 13. Adversarial 8: Boolean short-circuit guard bypass (`and False`) in Auth.login
+    def mut_adv_08(repo: Path) -> None:
+        p = repo / "auth.py"
+        text = _read_norm(p)
+        old = 'if not self.validator.verify(password, user["hashed"], user["salt"]):'
+        new = 'if not self.validator.verify(password, user["hashed"], user["salt"]) and False:'
+        _write_norm(p, text.replace(old, new))
+
+    mutations.append({
+        "id": "MUT-ADV-08",
+        "branch": "mut/adv-guard-short-circuit",
+        "kind": "adversarial",
+        "expected_verdict": "DESTRUCTIVE",
+        "description": "Neutralize password verification in Auth.login via boolean short-circuit (`and False`)",
+        "apply": mut_adv_08,
+    })
+
+    # 14. Adversarial 9: Workflow expression injection in `.github/workflows/ci.yml`
+    def mut_adv_09(repo: Path) -> None:
+        wf_dir = repo / ".github" / "workflows"
+        wf_dir.mkdir(parents=True, exist_ok=True)
+        wf_file = wf_dir / "ci.yml"
+        _write_norm(
+            wf_file,
+            "name: CI\n"
+            "on: [pull_request]\n"
+            "jobs:\n"
+            "  test:\n"
+            "    runs-on: ubuntu-latest\n"
+            "    steps:\n"
+            "      - uses: actions/checkout@v4\n"
+            "      - name: Log PR title\n"
+            "        run: echo \"Checking ${{ github.event.pull_request.title }}\"\n",
+        )
+
+    mutations.append({
+        "id": "MUT-ADV-09",
+        "branch": "mut/adv-workflow-expr-injection",
+        "kind": "adversarial",
+        "expected_verdict": "DESTRUCTIVE",
+        "description": "Introduce untrusted GitHub expression interpolation inside workflow `run:` block",
+        "apply": mut_adv_09,
+    })
+
+    # 15. Adversarial 10: Test assertion erosion (`assert True`) in `test_database.py`
+    def mut_adv_10(repo: Path) -> None:
+        p = repo / "test_database.py"
+        text = _read_norm(p)
+        old = (
+            "    def test_acquire_returns_connection(self):\n"
+            "        pool = ConnectionPool()\n"
+            "        conn = pool.acquire()\n"
+            "        assert conn is not None\n"
+            "        assert conn[\"alive\"] is True"
+        )
+        new = (
+            "    def test_acquire_returns_connection(self):\n"
+            "        pool = ConnectionPool()\n"
+            "        conn = pool.acquire()\n"
+            "        assert True"
+        )
+        _write_norm(p, text.replace(old, new))
+
+    mutations.append({
+        "id": "MUT-ADV-10",
+        "branch": "mut/adv-test-assertion-erosion",
+        "kind": "adversarial",
+        "expected_verdict": "DESTRUCTIVE",
+        "description": "Replace real assertions in `TestConnectionPool.test_acquire_returns_connection` with `assert True`",
+        "apply": mut_adv_10,
+    })
+
+    # 16. Benign 6: Safe workflow `env:` binding for untrusted PR title
+    def mut_ben_06(repo: Path) -> None:
+        wf_dir = repo / ".github" / "workflows"
+        wf_dir.mkdir(parents=True, exist_ok=True)
+        wf_file = wf_dir / "ci.yml"
+        _write_norm(
+            wf_file,
+            "name: CI\n"
+            "on: [pull_request]\n"
+            "jobs:\n"
+            "  test:\n"
+            "    runs-on: ubuntu-latest\n"
+            "    steps:\n"
+            "      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11\n"
+            "      - name: Log PR title safely\n"
+            "        env:\n"
+            "          PR_TITLE: ${{ github.event.pull_request.title }}\n"
+            "        run: echo \"Checking $PR_TITLE\"\n",
+        )
+
+    mutations.append({
+        "id": "MUT-BEN-06",
+        "branch": "mut/ben-workflow-safe-env",
+        "kind": "benign",
+        "expected_verdict": "SAFE",
+        "description": "Bind `github.event.pull_request.title` via step `env:` variable in workflow",
+        "apply": mut_ben_06,
+    })
+
     return mutations
 
 
