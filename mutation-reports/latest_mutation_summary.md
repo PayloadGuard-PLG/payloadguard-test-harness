@@ -1,7 +1,7 @@
 # PayloadGuard Adversarial Harness — Mutation Testing Report
 
-- **Timestamp (UTC):** `2026-10-25T12:46:15.539567+00:00`
-- **Analyser Version:** `1.4.0`
+- **Timestamp (UTC):** `2026-10-26T16:04:19.295346+00:00`
+- **Analyser Version:** `1.6.0`
 - **Total Mutations Evaluated:** `16` (`10` adversarial, `6` benign refactors)
 - **Pass Rate (Enforce Mode):** `16/16`
 - **False Positives Discovered:** `0`

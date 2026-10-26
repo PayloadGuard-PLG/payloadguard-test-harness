@@ -2,7 +2,7 @@
 
 **Version:** 1.3  
 **Repo:** `payloadguard-test-harness`  
-**Reports land in:** `payload-consequence-analyser/test-reports/runs/`
+**Reports land in:** the `payloadguard-results` workflow artifact, ingested into `tools/db/results.db`
 
 ---
 
