@@ -8,7 +8,7 @@ This repo exists to:
 - Generate repeatable, controlled PRs that PayloadGuard scans
 - Validate consistent verdicts across identical inputs
 - Stress test edge cases and known limitations
-- Feed scan reports into `payload-consequence-analyser/test-reports/`
+- Record scan results in `tools/db/results.db` for regression history and the dashboard
 
 ## Structure
 
@@ -58,17 +58,16 @@ Static evasion techniques: deletion obfuscation, threshold gaming, workflow pois
 L2c signal coverage — 7 active cases, 3 reserved for pending GitHub 2026 API features.
 
 **Track 4 — Red Team** (`rta/`)
-Live findings from the 2026-05-25 red-team session. Confirmed detections (RTA01, RTA03–05) and known bypass (RTA02).
+Live findings from the 2026-05-25 red-team session. Confirmed detections (RTA01–RTA05); RTA02 was a bypass until analyser v1.2.0 and is now detected (DESTRUCTIVE).
 
 **Track 5 — Runtime** (`runtime/`)
 L5c eBPF agent event coverage — procmem, egress, and ptrace scenarios. Static verdict is SAFE; layer fires advisory events only.
 
 ## Reports
 
-Each PayloadGuard scan produces a JSON report saved to:
-`payload-consequence-analyser/test-reports/runs/`
+Each scan uploads its JSON report as the `payloadguard-results` workflow artifact. `tools/run_regression.py --ingest` collects the artifacts into `tools/db/results.db`, which `tools/dashboard.py` reads.
 
-See that repo for aggregated results and consistency analysis.
+Offline checks that need no live PRs: `tools/validate_manifest.py --verify-consequence <analyser_dir>` (consequence oracle) and `tools/run_mutation_suite.py --analyser-dir <analyser_dir>` (writes `mutation-reports/`). Against analyser v1.6.0: 41/41 and 16/16.
 
 ---
 

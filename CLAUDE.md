@@ -3,6 +3,7 @@
 ## Handover (update this block at the end of every session)
 
 - **Branch for next work:** create a new branch from main (both repos)
+- **Analyser v1.6.0 offline verification (2026-10-26):** `validate_manifest.py --verify-consequence` 41/41 and `run_mutation_suite.py` 16/16 (0 FP / 0 FN) against analyser v1.6.0 (`6c3df91`, published to PyPI). `mutation-reports/` refreshed. The live workflow (`.github/workflows/payloadguard.yml`) now pins analyser `6c3df91` (v1.6.0; previously `fe68338`, v1.3.0). Pin check: the CLI run as the workflow runs it (PR head SHA, base `main`, live PR bodies, default `shadow` mode) gives identical verdicts, exit codes and scores under v1.3.0 and v1.6.0 on all 38 active cases, matching `expected_exit_code` 38/38. No live regression has been run on the new pin yet. v1.6.0 changes that affect harness behaviour: policy files are read from the base branch, the head is scanned by PR head SHA (fork PRs work), the `verdict` output reports REVIEW/CAUTION, and a `consequence-mode` input exists.
 - **Status:** 41 test cases, 9 categories, 38 active branches + 3 pending GitHub 2026 API. `tools/test_cases.json` upgraded to Schema v2 (`2.0`) with `expected_consequence` oracle fields (`expected_detectors`, `forbidden_detectors`, `enforce_verdict`, `enforce_exit`, `min_reconciled_symbols`) and `tools/validate_manifest.py` (`--verify-consequence`). **Consequence Engine v1 (`consequence.v1` + `D01`–`D06` v2) oracle verification: 38/38 PASS (PR #74 `4e8e1df`, PR #75 `dcc5522`).**
 - **A03/A06 resolution in Consequence Engine (`consequence.v1`):**
   - Legacy L3 (`shadow` mode): `A03` (`adversarial/slow-deletion`) and `A06` (`adversarial/threshold-gaming`) remain `SAFE (0)` for backward compatibility with existing L3 thresholds.
@@ -76,7 +77,8 @@ tools/validate_manifest.py  — validates Schema v1+v2 integrity, branch refs, a
 tools/run_regression.py     — regression runner (modes: stable | temporal | full | runtime)
 tools/ingest.py             — ingests scan results into SQLite
 tools/dashboard.py          — Dash dashboard: regression matrix, history, threshold simulator
-tools/gen_test_registry.py  — regenerates test registry from live pytest run (not used in harness)
+tools/run_mutation_suite.py — offline mutation suite (10 adversarial + 6 benign mutations, shadow and enforce modes); writes mutation-reports/mutation_runs.jsonl and latest_mutation_summary.md
+mutation-reports/           — mutation suite results (latest: analyser 1.6.0, 16/16)
 ```
 
 ---
