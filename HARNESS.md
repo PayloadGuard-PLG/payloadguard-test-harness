@@ -222,6 +222,8 @@ The harness handles this with two groups:
 
 **When aging cases need refreshing:** If T01/T02/T12/A10 reach CAUTION (score 3–4) and you want to reset the clock, create fresh branches off current main, open new PRs, and update `test_cases.json` with the new branch names. The old branches can be archived (left closed) for historical reference.
 
+**Age in stable cases (measured 2026-10-26, analyser v1.6.0):** Branch age is the target commit's date minus the fixture's commit date, so every new commit on `main` ages all fixtures at once (merging PR #78 on 2026-10-26 moved them from 4–37 days against the previous `main` commit, dated 2026-05-31, to 152–185 days). The stable group is not immune: CAUTION-expected stable cases (WS03, WS04, WS05, AW02, RTA03, RTA04) score 3 without age, 4 with the +1 beyond 90 days, and 5 = DESTRUCTIVE (exit 2) once the +2 beyond 180 days applies (`days_old > 180`, whole days). All six fixtures were committed on 2026-05-25, so any live run against a `main` commit dated from 2026-11-22 fails them for age alone. SAFE-expected stable cases (A03, A06, WS07, AW04, RT01–RT03) already read REVIEW; their exit code stays 0 until the +3 beyond 365 days lifts them to CAUTION, which still exits 0.
+
 ---
 
 ## Known Limitations & Consequence Engine (`consequence.v1`)

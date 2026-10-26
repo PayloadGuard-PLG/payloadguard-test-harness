@@ -9,6 +9,7 @@ This repo exists to:
 - Validate consistent verdicts across identical inputs
 - Stress test edge cases and known limitations
 - Record scan results in `tools/db/results.db` for regression history and the dashboard
+- Keep a permanent scan history in `regression-reports/` from the PayloadGuard check runs, which outlive the 90-day artifacts
 
 ## Structure
 
@@ -30,6 +31,7 @@ payloadguard-test-harness/
 │   ├── validate_manifest.py # Schema v1+v2 validator & --verify-consequence oracle runner
 │   ├── run_regression.py    # Automated PR regression runner
 │   ├── ingest.py            # SQLite ingestion for scan artifacts
+│   ├── collect_history.py   # Scan history from PayloadGuard check runs → regression-reports/
 │   └── dashboard.py         # Dash visual regression & threshold simulator
 └── requirements.txt
 ```
@@ -65,7 +67,7 @@ L5c eBPF agent event coverage — procmem, egress, and ptrace scenarios. Static 
 
 ## Reports
 
-Each scan uploads its JSON report as the `payloadguard-results` workflow artifact. `tools/run_regression.py --ingest` collects the artifacts into `tools/db/results.db`, which `tools/dashboard.py` reads.
+Each scan uploads its JSON report as the `payloadguard-results` workflow artifact. `tools/run_regression.py --ingest` collects the artifacts into `tools/db/results.db`, which `tools/dashboard.py` reads. Artifacts expire after 90 days; the `PayloadGuard` check run each scan posts does not. `tools/collect_history.py --analyser-dir <analyser_dir>` appends every check run on each fixture's head commit to `regression-reports/scan_history.jsonl` (verdict, metrics, analyser version resolved from the workflow pin, full report) and rewrites `regression-reports/latest_regression_summary.md`. Run it after each live regression and commit the result. History on record: 423 scans, 2026-04-24 to 2026-05-31.
 
 Offline checks that need no live PRs: `tools/validate_manifest.py --verify-consequence <analyser_dir>` (consequence oracle) and `tools/run_mutation_suite.py --analyser-dir <analyser_dir>` (writes `mutation-reports/`). Against analyser v1.6.0: 41/41 and 16/16.
 
