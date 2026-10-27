@@ -1,7 +1,7 @@
 # PayloadGuard Harness — Scan History
 
-- **Collected (UTC):** `2026-10-26T17:20:34+00:00`
-- **Check runs recorded:** `457` from `2026-04-24` to `2026-10-26`, across `38` fixtures
+- **Collected (UTC):** `2026-10-27T09:11:24+00:00`
+- **Check runs recorded:** `491` from `2026-04-24` to `2026-10-26`, across `38` fixtures
 - **Source:** the `PayloadGuard` check run of every scan on each fixture PR's head commit (`regression-reports/scan_history.jsonl`, one record per check run with the full report)
 - **Judged against:** the current `tools/test_cases.json`. Exit-code match is the live regression criterion (DESTRUCTIVE ⇔ expected exit 2); verdict match also compares SAFE/REVIEW/CAUTION. Aging cases are observational and excluded from both.
 
@@ -27,6 +27,7 @@
 | 2026-05-31 06:15 | 1.3.0 (`257039a`) | 34 | 22/34 | 22/34 | A03, A06, AW02, AW04, RT01, RT02, RT03, RTA01, RTA03, RTA04, WS03, WS05 |
 | 2026-05-31 14:11 | 1.3.0 (`fe68338`) | 34 | 34/34 | 33/34 | — |
 | 2026-10-26 16:45 | 1.6.0 (`6c3df91`) | 34 | 34/34 | 27/34 | — |
+| 2026-10-26 20:27 | 1.6.0 (`6c3df91`) | 34 | 34/34 | 27/34 | — |
 
 ## Latest scan per case
 
@@ -35,40 +36,40 @@
 | `T01` | `SAFE` | `SAFE` | unversioned (`main` @ `ea7eda6`) | 2026-04-24 15:38 | — | observing | `SSSSSSS` |
 | `T02` | `SAFE` | `SAFE` | unversioned (`main` @ `ea7eda6`) | 2026-04-24 15:38 | — | observing | `SSSSSSS` |
 | `T12` | `SAFE` | `SAFE` | unversioned (`main` @ `ea7eda6`) | 2026-04-24 15:38 | — | observing | `SSSSSSS` |
-| `T03` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:45 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDD` |
-| `T04` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:46 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `DDDDDDDDDDDDDD` |
-| `T05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:46 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDD` |
-| `T09` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:46 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDD` |
-| `T10` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:47 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDDD` |
-| `T11` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:47 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDD` |
-| `A01` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:47 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDD` |
-| `A02` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:47 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDD` |
-| `A03` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:47 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK`, `D06_GUARD_REGRESSION` | match | `SSSCCCDSSDDDSR` |
-| `A04` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:47 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `RRRDDDDDDDDDDD` |
-| `A05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:47 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDDD` |
-| `A06` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:48 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `SSSSSSSSSSDDDSR` |
-| `A07` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:48 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDD` |
-| `A09` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:48 | — | match | `RRRDDDDDDDDDDD` |
+| `T03` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDDD` |
+| `T04` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `DDDDDDDDDDDDDDD` |
+| `T05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDDD` |
+| `T09` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDDD` |
+| `T10` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDDDD` |
+| `T11` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDDD` |
+| `A01` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDDD` |
+| `A02` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDDD` |
+| `A03` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK`, `D06_GUARD_REGRESSION` | match | `SSSCCCDSSDDDSRR` |
+| `A04` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `RRRDDDDDDDDDDDD` |
+| `A05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCCCCDDDDDDDDDD` |
+| `A06` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `SSSSSSSSSSDDDSRR` |
+| `A07` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D02_BODY_WEAKENING`, `D03_COMPOUND_LOSS`, `D04_PUBLIC_API_BREAK` | match | `CCCDDDDDDDDDDDD` |
+| `A09` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `RRRDDDDDDDDDDDD` |
 | `A10` | `SAFE` | `SAFE` | unversioned (`main` @ `ea7eda6`) | 2026-04-24 15:38 | — | observing | `SSSSSSS` |
-| `WS01` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:48 | — | match | `DDDDDDD` |
-| `WS02` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:48 | — | match | `DDDDDDD` |
-| `WS03` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 16:49 | — | match | `DCCCCDCC` |
-| `WS04` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 16:49 | — | match | `CCCDCCC` |
-| `WS05` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 16:49 | — | match | `CCCCDCC` |
-| `WS06` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:49 | `D08_WORKFLOW_INTEGRITY` | match | `DDDDDDDD` |
-| `WS07` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:49 | — | match | `SSDSSSR` |
-| `AW01` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:49 | — | match | `DDDDDDD` |
-| `AW02` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 16:50 | — | match | `CCCDDCC` |
-| `AW03` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:50 | `D08_WORKFLOW_INTEGRITY` | match | `DDDDDDD` |
-| `AW04` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:50 | `D08_WORKFLOW_INTEGRITY` | match | `SSSDDSR` |
-| `AW05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:50 | — | match | `DDDDDDD` |
-| `RTA01` | `REVIEW` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:50 | — | match | `RRRRRRRRRRRRRRRRSSSSDDSR` |
-| `RTA02` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:50 | — | match | `SDDDDDDDDDDDDDDDDDDDDDDD` |
-| `RTA03` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 16:50 | `D08_WORKFLOW_INTEGRITY` | match | `CCCCCCCCCCCCCCCCCCCDDDCC` |
-| `RTA04` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 16:51 | — | match | `SCCCCCCCCCCCCCCCCCCCDDCC` |
-| `RTA05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 16:51 | — | match | `DDDDDDDDDDDDDDDDDDDDDDDD` |
-| `RT01` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:51 | — | match | `SSSSDDSR` |
-| `RT02` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:51 | — | match | `SSSDDDSR` |
-| `RT03` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 16:51 | — | match | `SSSSDDSR` |
+| `WS01` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `DDDDDDDD` |
+| `WS02` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `DDDDDDDD` |
+| `WS03` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `DCCCCDCCC` |
+| `WS04` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `CCCDCCCC` |
+| `WS05` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `CCCCDCCC` |
+| `WS06` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D08_WORKFLOW_INTEGRITY` | match | `DDDDDDDDD` |
+| `WS07` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `SSDSSSRR` |
+| `AW01` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `DDDDDDDD` |
+| `AW02` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `CCCDDCCC` |
+| `AW03` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D08_WORKFLOW_INTEGRITY` | match | `DDDDDDDD` |
+| `AW04` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D08_WORKFLOW_INTEGRITY` | match | `SSSDDSRR` |
+| `AW05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `DDDDDDDD` |
+| `RTA01` | `REVIEW` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `RRRRRRRRRRRRRRRRSSSSDDSRR` |
+| `RTA02` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `SDDDDDDDDDDDDDDDDDDDDDDDD` |
+| `RTA03` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | `D08_WORKFLOW_INTEGRITY` | match | `CCCCCCCCCCCCCCCCCCCDDDCCC` |
+| `RTA04` | `CAUTION` | `CAUTION` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `SCCCCCCCCCCCCCCCCCCCDDCCC` |
+| `RTA05` | `DESTRUCTIVE` | `DESTRUCTIVE` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `DDDDDDDDDDDDDDDDDDDDDDDDD` |
+| `RT01` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `SSSSDDSRR` |
+| `RT02` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:28 | — | match | `SSSDDDSRR` |
+| `RT03` | `SAFE` | `REVIEW` | 1.6.0 (`6c3df91`) | 2026-10-26 20:27 | — | match | `SSSSDDSRR` |
 
 History letters: S = SAFE, R = REVIEW, C = CAUTION, D = DESTRUCTIVE.
