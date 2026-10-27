@@ -19,7 +19,7 @@ jobs:
       - name: PayloadGuard Scan
         id: payloadguard
         continue-on-error: true
-        uses: payloadguard-plg/payload-consequence-analyser@a4bcaa4aeefd70417311ddd7866591ae4f368dda  # v1.6.0 + §H1 fix (analyser PR #116)
+        uses: payloadguard-plg/payload-consequence-analyser@40b27dcbe27ce9d1c859f768ea2493512d38ec8a  # v1.6.0 + §H1/§H2 fixes (analyser PRs #116, #117)
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           pr-description: ${{ github.event.pull_request.body }}

@@ -570,7 +570,7 @@ a06-threshold-gaming-run1-20260423.json
 | AW03 | `adversarial/workflow-typosquatted-oidc` | L2c Adversarial | DESTRUCTIVE | DESTRUCTIVE | L2c |
 | AW04 | `adversarial/workflow-legitimate-oidc` | L2c Adversarial | SAFE | SAFE | None |
 | AW05 | `adversarial/workflow-modified-poison` | L2c Adversarial | DESTRUCTIVE | DESTRUCTIVE | L2c |
-| RTA01 | `rta/push-rm-rf` | Red Team | REVIEW | REVIEW | L2 |
+| RTA01 | `rta/push-rm-rf` | Red Team | CAUTION *(REVIEW until analyser §H2)* | CAUTION | L2c |
 | RTA02 | `rta/schedule-curl-exfil` | Red Team | DESTRUCTIVE *(fixed v1.2.0)* | DESTRUCTIVE | L2c |
 | RTA03 | `rta/prt-untrusted-checkout` | Red Team | CAUTION | CAUTION | L2c |
 | RTA04 | `github-env-injection` (`rta/github-env-injection`) | Red Team | CAUTION | CAUTION | L2c |
