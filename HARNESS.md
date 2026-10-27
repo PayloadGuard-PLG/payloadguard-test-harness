@@ -224,6 +224,8 @@ The harness handles this with two groups:
 
 **Age in stable cases (measured 2026-10-26, analyser v1.6.0):** Branch age is the target commit's date minus the fixture's commit date, so every new commit on `main` ages all fixtures at once (merging PR #78 on 2026-10-26 moved them from 4–37 days against the previous `main` commit, dated 2026-05-31, to 152–185 days). The stable group is not immune: CAUTION-expected stable cases (WS03, WS04, WS05, AW02, RTA03, RTA04) score 3 without age, 4 with the +1 beyond 90 days, and 5 = DESTRUCTIVE (exit 2) once the +2 beyond 180 days applies (`days_old > 180`, whole days). All six fixtures were committed on 2026-05-25, so any live run against a `main` commit dated from 2026-11-22 fails them for age alone. SAFE-expected stable cases (A03, A06, WS07, AW04, RT01–RT03) already read REVIEW; their exit code stays 0 until the +3 beyond 365 days lifts them to CAUTION, which still exits 0.
 
+**Resolved in the analyser (2026-10-27):** analyser PR #116 (AUDIT_LOG §H1) stops branch age from deciding DESTRUCTIVE. Age is applied after every content signal and, unless those signals already reach DESTRUCTIVE, lifts the score at most to 4 (CAUTION). The six CAUTION-expected cases therefore stay CAUTION (score 4, exit 0) at any age; checked against harness `main` trees dated 2026-11-30 and 2027-06-01, where all 38 exit codes match. The workflow pins that commit (`a4bcaa4`). SAFE-expected cases still drift to REVIEW and, beyond 365 days, CAUTION (exit 0).
+
 ---
 
 ## Known Limitations & Consequence Engine (`consequence.v1`)
