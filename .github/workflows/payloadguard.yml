@@ -19,10 +19,11 @@ jobs:
       - name: PayloadGuard Scan
         id: payloadguard
         continue-on-error: true
-        uses: payloadguard-plg/payload-consequence-analyser@40b27dcbe27ce9d1c859f768ea2493512d38ec8a  # v1.6.0 + §H1/§H2 fixes (analyser PRs #116, #117)
+        uses: payloadguard-plg/payload-consequence-analyser@6e46dcfb1cbaf98141e480e6f21b281de18cbb5d  # main after the round-3 fixes (analyser PR #123)
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           pr-description: ${{ github.event.pull_request.body }}
+          consequence-mode: advisory   # consequence findings raise SAFE to REVIEW; never exit 2
           app-id: ${{ secrets.PAYLOADGUARD_APP_ID }}
           private-key: ${{ secrets.PAYLOADGUARD_PRIVATE_KEY }}
           installation-id: ${{ secrets.PAYLOADGUARD_INSTALLATION_ID }}
